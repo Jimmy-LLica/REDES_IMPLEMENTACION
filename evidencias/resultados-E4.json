@@ -1,0 +1,156 @@
+[
+  {
+    "mode": "auto",
+    "label": "Automatizado",
+    "liters": 3864,
+    "intensity": 1.38,
+    "band": 99.10962301587301,
+    "daily": [
+      {
+        "day": 1,
+        "liters": 1080,
+        "intensity": 2.7,
+        "band": 98.05555555555556
+      },
+      {
+        "day": 2,
+        "liters": 348,
+        "intensity": 0.87,
+        "band": 99.40972222222223
+      },
+      {
+        "day": 3,
+        "liters": 348,
+        "intensity": 0.87,
+        "band": 99.63541666666667
+      },
+      {
+        "day": 4,
+        "liters": 696,
+        "intensity": 1.74,
+        "band": 98.80208333333333
+      },
+      {
+        "day": 5,
+        "liters": 696,
+        "intensity": 1.74,
+        "band": 99.04513888888889
+      },
+      {
+        "day": 6,
+        "liters": 0,
+        "intensity": 0,
+        "band": 100
+      },
+      {
+        "day": 7,
+        "liters": 696,
+        "intensity": 1.74,
+        "band": 98.81944444444444
+      }
+    ],
+    "sectors": [
+      {
+        "id": "S1",
+        "liters": 1080,
+        "bandMinutes": 9940,
+        "band": 98.61111111111111
+      },
+      {
+        "id": "S2",
+        "liters": 1044,
+        "bandMinutes": 9993,
+        "band": 99.13690476190476
+      },
+      {
+        "id": "S3",
+        "liters": 1044,
+        "bandMinutes": 10016,
+        "band": 99.36507936507937
+      },
+      {
+        "id": "S4",
+        "liters": 696,
+        "bandMinutes": 10012,
+        "band": 99.32539682539682
+      }
+    ]
+  },
+  {
+    "mode": "fixed",
+    "label": "Horario fijo",
+    "liters": 4032,
+    "intensity": 1.44,
+    "band": 86.86011904761905,
+    "daily": [
+      {
+        "day": 1,
+        "liters": 576,
+        "intensity": 1.44,
+        "band": 93.64583333333333
+      },
+      {
+        "day": 2,
+        "liters": 576,
+        "intensity": 1.44,
+        "band": 93.71527777777777
+      },
+      {
+        "day": 3,
+        "liters": 576,
+        "intensity": 1.44,
+        "band": 95.20833333333333
+      },
+      {
+        "day": 4,
+        "liters": 576,
+        "intensity": 1.44,
+        "band": 89.02777777777777
+      },
+      {
+        "day": 5,
+        "liters": 576,
+        "intensity": 1.44,
+        "band": 82.84722222222223
+      },
+      {
+        "day": 6,
+        "liters": 576,
+        "intensity": 1.44,
+        "band": 78.09027777777777
+      },
+      {
+        "day": 7,
+        "liters": 576,
+        "intensity": 1.44,
+        "band": 75.48611111111111
+      }
+    ],
+    "sectors": [
+      {
+        "id": "S1",
+        "liters": 1008,
+        "bandMinutes": 9352,
+        "band": 92.77777777777777
+      },
+      {
+        "id": "S2",
+        "liters": 1008,
+        "bandMinutes": 10080,
+        "band": 100
+      },
+      {
+        "id": "S3",
+        "liters": 1008,
+        "bandMinutes": 9300,
+        "band": 92.26190476190476
+      },
+      {
+        "id": "S4",
+        "liters": 1008,
+        "bandMinutes": 6290,
+        "band": 62.40079365079365
+      }
+    ]
+  }
+]

@@ -1,0 +1,17 @@
+﻿estrategia,periodo,litros,litros_m2_dia,tiempo_en_banda_pct
+Automatizado,7 días,3864,1.3800,99.1096
+Automatizado,Día 1,1080,2.7000,98.0556
+Automatizado,Día 2,348,0.8700,99.4097
+Automatizado,Día 3,348,0.8700,99.6354
+Automatizado,Día 4,696,1.7400,98.8021
+Automatizado,Día 5,696,1.7400,99.0451
+Automatizado,Día 6,0,0.0000,100.0000
+Automatizado,Día 7,696,1.7400,98.8194
+Horario fijo,7 días,4032,1.4400,86.8601
+Horario fijo,Día 1,576,1.4400,93.6458
+Horario fijo,Día 2,576,1.4400,93.7153
+Horario fijo,Día 3,576,1.4400,95.2083
+Horario fijo,Día 4,576,1.4400,89.0278
+Horario fijo,Día 5,576,1.4400,82.8472
+Horario fijo,Día 6,576,1.4400,78.0903
+Horario fijo,Día 7,576,1.4400,75.4861

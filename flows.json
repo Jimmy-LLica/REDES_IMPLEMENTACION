@@ -1,0 +1,1039 @@
+[
+    {
+        "id": "rg-simulation",
+        "type": "tab",
+        "label": "RiegoGuard Tacna",
+        "disabled": false,
+        "info": "Simulación local con cuatro sectores de 100 m²."
+    },
+    {
+        "id": "rg-notes",
+        "type": "comment",
+        "z": "rg-simulation",
+        "name": "1 · Entradas de control y telemetría",
+        "info": "Abre /riegoguard/panel. Sus botones envían POST a /riegoguard/orden y reciben el estado actualizado. Un segundo equivale a un minuto virtual.",
+        "x": 250,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "rg-output-notes",
+        "type": "comment",
+        "z": "rg-simulation",
+        "name": "2 · Válvulas, panel y respuestas HTTP",
+        "info": "El panel 2D/3D y los medidores comparten el estado. El POST ESP32 entrega lecturas y recibe la consigna de válvula.",
+        "x": 815,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "rg-clock",
+        "type": "inject",
+        "z": "rg-simulation",
+        "name": "Reloj · 1 s = 1 min virtual",
+        "topic": "tick",
+        "repeat": "1",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "once": true,
+        "onceDelay": "0.3",
+        "crontab": "",
+        "x": 185,
+        "y": 120,
+        "wires": [
+            [
+                "rg-esp32"
+            ]
+        ]
+    },
+    {
+        "id": "rg-trigger-start",
+        "type": "inject",
+        "z": "rg-simulation",
+        "name": "Iniciar riego",
+        "topic": "start",
+        "repeat": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "once": false,
+        "onceDelay": "0.3",
+        "crontab": "",
+        "x": 185,
+        "y": 165,
+        "wires": [
+            [
+                "rg-esp32"
+            ]
+        ]
+    },
+    {
+        "id": "rg-trigger-stop",
+        "type": "inject",
+        "z": "rg-simulation",
+        "name": "Detener riego",
+        "topic": "stop",
+        "repeat": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "once": false,
+        "onceDelay": "0.3",
+        "crontab": "",
+        "x": 185,
+        "y": 205,
+        "wires": [
+            [
+                "rg-esp32"
+            ]
+        ]
+    },
+    {
+        "id": "rg-esp-http",
+        "type": "http in",
+        "z": "rg-simulation",
+        "name": "POST · ESP32 / Wokwi",
+        "method": "post",
+        "url": "/riegoguard/esp32",
+        "upload": false,
+        "x": 185,
+        "y": 300,
+        "wires": [
+            [
+                "rg-esp-http-topic"
+            ]
+        ]
+    },
+    {
+        "id": "rg-esp-http-topic",
+        "type": "change",
+        "z": "rg-simulation",
+        "name": "Identificar esp32",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "esp32",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 425,
+        "y": 300,
+        "wires": [
+            [
+                "rg-esp32"
+            ]
+        ]
+    },
+    {
+        "id": "rg-health-http",
+        "type": "http in",
+        "z": "rg-simulation",
+        "name": "GET · estado en vivo",
+        "method": "get",
+        "url": "/riegoguard/estado",
+        "upload": false,
+        "x": 185,
+        "y": 355,
+        "wires": [
+            [
+                "rg-health-http-topic"
+            ]
+        ]
+    },
+    {
+        "id": "rg-health-http-topic",
+        "type": "change",
+        "z": "rg-simulation",
+        "name": "Identificar estado-http",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "estado-http",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 425,
+        "y": 355,
+        "wires": [
+            [
+                "rg-esp32"
+            ]
+        ]
+    },
+    {
+        "id": "rg-command-http",
+        "type": "http in",
+        "z": "rg-simulation",
+        "name": "POST · órdenes del panel",
+        "method": "post",
+        "url": "/riegoguard/orden",
+        "upload": false,
+        "x": 185,
+        "y": 410,
+        "wires": [
+            [
+                "rg-command-http-topic"
+            ]
+        ]
+    },
+    {
+        "id": "rg-command-http-topic",
+        "type": "change",
+        "z": "rg-simulation",
+        "name": "Identificar orden-http",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "orden-http",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 425,
+        "y": 410,
+        "wires": [
+            [
+                "rg-esp32"
+            ]
+        ]
+    },
+    {
+        "id": "rg-network-http",
+        "type": "http in",
+        "z": "rg-simulation",
+        "name": "POST · parcelas Packet Tracer",
+        "method": "post",
+        "url": "/riegoguard/red",
+        "upload": false,
+        "x": 185,
+        "y": 455,
+        "wires": [
+            [
+                "rg-network-http-topic"
+            ]
+        ]
+    },
+    {
+        "id": "rg-network-http-topic",
+        "type": "change",
+        "z": "rg-simulation",
+        "name": "Identificar red-http",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "red-http",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 425,
+        "y": 455,
+        "wires": [
+            [
+                "rg-esp32"
+            ]
+        ]
+    },
+    {
+        "id": "rg-central-http",
+        "type": "http in",
+        "z": "rg-simulation",
+        "name": "GET · datos centralizados",
+        "method": "get",
+        "url": "/riegoguard/central",
+        "upload": false,
+        "x": 185,
+        "y": 500,
+        "wires": [
+            [
+                "rg-central-http-topic"
+            ]
+        ]
+    },
+    {
+        "id": "rg-central-http-topic",
+        "type": "change",
+        "z": "rg-simulation",
+        "name": "Identificar central-http",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "central-http",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 425,
+        "y": 500,
+        "wires": [
+            [
+                "rg-esp32"
+            ]
+        ]
+    },
+    {
+        "id": "rg-network-status-http",
+        "type": "http in",
+        "z": "rg-simulation",
+        "name": "POST · diagnóstico Packet Tracer",
+        "method": "post",
+        "url": "/riegoguard/red/diagnostico",
+        "upload": false,
+        "x": 185,
+        "y": 535,
+        "wires": [
+            [
+                "rg-network-status-http-topic"
+            ]
+        ]
+    },
+    {
+        "id": "rg-network-status-http-topic",
+        "type": "change",
+        "z": "rg-simulation",
+        "name": "Identificar red-status-http",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "red-status-http",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 425,
+        "y": 535,
+        "wires": [
+            [
+                "rg-esp32"
+            ]
+        ]
+    },
+    {
+        "id": "rg-panel-http",
+        "type": "http in",
+        "z": "rg-simulation",
+        "name": "GET · panel 2D / 3D",
+        "method": "get",
+        "url": "/riegoguard/panel",
+        "upload": false,
+        "x": 185,
+        "y": 570,
+        "wires": [
+            [
+                "rg-panel-html"
+            ]
+        ]
+    },
+    {
+        "id": "rg-panel-html",
+        "type": "template",
+        "z": "rg-simulation",
+        "name": "HTML, CSS y simulación 3D",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "plain",
+        "template": "<!doctype html>\n<html lang=\"es\" data-runtime=\"node-red\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <meta name=\"color-scheme\" content=\"light\">\n  <title>RiegoGuard Tacna</title>\n  <style>:root {\n  font-family: \"DM Sans\", \"Segoe UI\", sans-serif;\n  color: #182822;\n  background: #f4f6f3;\n  font-synthesis: none;\n  --ink: #182822;\n  --muted: #53655e;\n  --line: #e0e7df;\n  --green: #21674f;\n  --nav: #14372d;\n}\n* { box-sizing: border-box; }\nbody { margin: 0; }\n[hidden] { display: none !important; }\n.symbols { position: absolute; width: 0; height: 0; overflow: hidden; }\nsvg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; vertical-align: middle; }\nbutton, select, input { font: inherit; }\nbutton, select, .switch { cursor: pointer; }\na { color: inherit; }\nbutton:disabled { cursor: not-allowed; opacity: .6; }\nbutton:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid #4b9f82; outline-offset: 3px; }\nh1, h2, p { margin: 0; }\nh1 { font-size: clamp(29px, 3vw, 42px); letter-spacing: -.047em; line-height: 1.07; }\nh2 { font-size: 18px; letter-spacing: -.025em; line-height: 1.25; }\np, small { color: var(--muted); }\n.shell { min-height: 100dvh; display: grid; grid-template-columns: 223px minmax(0, 1fr); }\n.sidebar { background: var(--nav); color: #fff; padding: 28px 19px 21px; height: 100dvh; position: sticky; top: 0; display: flex; flex-direction: column; }\n.brand { display: flex; align-items: center; gap: 11px; margin: 0 3px 46px; }\n.brand-mark { display: grid; place-items: center; border-radius: 12px; width: 43px; height: 43px; background: #c8eca8; color: #194736; }\n.brand-mark svg { width: 25px; height: 25px; }\n.brand strong { font-size: 20px; letter-spacing: -.035em; display: block; line-height: 1.12; }\n.brand small { display: block; font-size: 9px; letter-spacing: .16em; font-weight: 700; color: #b9cec3; margin-top: 5px; }\n.navigation { display: grid; gap: 6px; }\n.nav-button { display: flex; align-items: center; gap: 11px; text-align: left; color: #d3e3db; background: transparent; border: 1px solid transparent; border-radius: 9px; padding: 11px; font-weight: 600; font-size: 13px; width: 100%; text-decoration: none; }\n.nav-button:hover { background: #234b40; }\n.nav-button.current { background: #285447; border-color: #386453; color: #f2ffed; }\n.nav-button.current svg { color: #c8eca8; }\n.nav-button svg { width: 17px; height: 17px; }\n.sidebar-end { margin-top: auto; border-top: 1px solid #3a5b50; padding: 17px 2px 0; display: flex; align-items: center; gap: 9px; }\n.sidebar-device { border: 1px solid #507365; color: #c8eca8; width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; }\n.sidebar-device svg { width: 17px; height: 17px; }\n.sidebar-end b, .sidebar-end small { display: block; font-size: 11px; }\n.sidebar-end small { color: #b9cec3; margin-top: 3px; }\n.main { width: 100%; max-width: 1480px; margin: 0 auto; padding: 24px 32px 34px; }\n.topline { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid #dce5dd; }\n.topline > span:first-child { font-size: 13px; color: #465b51; font-weight: 600; display: flex; align-items: center; gap: 6px; }\n.topline > span:first-child svg { height: 16px; width: 16px; color: var(--green); }\n.system-pills { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; }\n.command-feedback { padding: 9px 12px; margin-top: 10px; border: 1px solid #f3dcae; border-radius: 7px; background: #fff0d5; color: #805311; font-size: 12px; }\n.pill { display: inline-flex; align-items: center; gap: 6px; min-height: 27px; padding: 5px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; white-space: nowrap; }\n.pill i, .legend i, .valve i { border-radius: 50%; height: 7px; width: 7px; background: currentColor; flex: none; }\n.pill svg { width: 14px; height: 14px; }\n.pill.online { color: #1f6247; background: #e3f0df; border: 1px solid #cde3c7; }\n.pill.offline, .pill.queued { color: #805311; background: #fff0d5; border: 1px solid #f3dcae; }\n.pill.neutral { color: #51635b; background: #f0f4ef; border: 1px solid #e3eae1; }\n.page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 15px; margin: 23px 0 21px; }\n.page-heading p { font-size: 14px; margin-top: 8px; line-height: 1.4; }\n.clock { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; background: #fff; border: 1px solid var(--line); border-radius: 8px; font-size: 12px; color: #41574d; font-weight: 650; white-space: nowrap; }\n.clock svg { width: 15px; height: 15px; color: #537163; }\n.metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 17px; }\n.metric, .card { background: white; border: 1px solid var(--line); border-radius: 13px; box-shadow: 0 2px 4px #18392c04; }\n.metric { padding: 13px 14px; display: grid; grid-template-columns: 37px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 10px; align-items: center; }\n.metric-icon { display: grid; place-items: center; width: 37px; height: 37px; border-radius: 9px; flex: none; }\n.metric-icon svg { width: 19px; height: 19px; }\n.metric > .metric-icon { grid-row: 1 / 3; }\n.metric > span:nth-child(2) { font-size: 11px; font-weight: 650; color: var(--muted); }\n.metric > strong { font-size: 23px; line-height: 1.1; margin-top: 2px; letter-spacing: -.035em; font-variant-numeric: tabular-nums; }\n.metric > strong small { font-size: 11px; font-weight: 650; letter-spacing: 0; }\n.metric-caption { grid-column: 2; font-size: 10px; margin-top: 4px; color: #52665c; line-height: 1.3; }\n.blue { background: #e6f2f4; color: #277082; }\n.lavender { background: #efedf7; color: #675a9b; }\n.green { background: #e8f2e4; color: #28694e; }\n.amber { background: #fcf0dc; color: #965e16; }\n.main-grid { display: grid; grid-template-columns: minmax(0, 2.13fr) minmax(265px, 1fr); gap: 17px; align-items: stretch; }\n.card { padding: 17px; }\n.card-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }\n.card-heading p, .control-heading p { margin-top: 4px; font-size: 12px; line-height: 1.35; }\n.legend { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--green); font-weight: 650; white-space: nowrap; }\n.legend i { color: #3e9a73; }\n.parcel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; padding: 8px; background: #eef2ea; border: 1px solid #e4ebe1; border-radius: 11px; }\n.sector { background: #f9fbf7; border: 1px solid #dce7d7; border-radius: 8px; overflow: hidden; position: relative; min-width: 0; }\n.sector.is-open { border-color: #4b9170; background: #f0f9ee; box-shadow: 0 0 0 1px #4b9170; }\n.sector-body { padding: 10px 10px 9px; position: relative; overflow: hidden; }\n.sector-body::after {\n  content: \"\"; position: absolute; inset: 0 0 0 40%; pointer-events: none; opacity: .65;\n  background: repeating-linear-gradient(134deg, transparent 0 11px, #dce9d5 11px 14px, transparent 14px 18px);\n  mask-image: linear-gradient(90deg, transparent, #000 70%);\n}\n.is-open .sector-body::after { background: repeating-linear-gradient(134deg, transparent 0 11px, #a7d6b5 11px 14px, transparent 14px 18px); }\n.sector-head, .sector-reading, .moisture-meter { position: relative; z-index: 1; }\n.sector-head { display: flex; align-items: center; justify-content: space-between; gap: 4px; }\n.sector-id { display: inline-flex; align-items: center; gap: 5px; font-size: 15px; font-weight: 750; letter-spacing: -.02em; }\n.sector-id svg { width: 13px; height: 13px; color: #518a63; }\n.sector-area { font-size: 10px; font-weight: 650; padding: 3px 5px; border-radius: 4px; background: #ffffffde; color: #4e6959; white-space: nowrap; }\n.sector-reading { margin-top: 6px; display: flex; align-items: baseline; gap: 6px; white-space: nowrap; }\n.sector-reading strong { font-size: clamp(21px, 2.2vw, 31px); line-height: 1.04; letter-spacing: -.055em; font-variant-numeric: tabular-nums; }\n.sector-reading span { font-size: 10px; color: #4b6557; }\n.moisture-meter { margin-top: 7px; height: 5px; background: #dae5d5; border-radius: 6px; overflow: hidden; }\n.moisture-meter::after { content: \"\"; position: absolute; left: 35%; width: 10%; height: 100%; background: #9fc39f; opacity: .68; }\n.moisture-meter .fill { position: absolute; left: 0; height: 100%; border-radius: 6px; background: #589372; z-index: 1; }\n.sector.is-open .fill { background: #248159; }\n.sector.is-dry .fill, .sector.is-wet .fill { background: #b3813c; }\n.valve { display: flex; justify-content: space-between; align-items: center; gap: 4px; border-top: 1px solid #e0eadc; background: #fff; padding: 6px 10px; color: #53665c; font-size: 10px; font-weight: 650; }\n.valve-state { display: flex; align-items: center; gap: 4px; white-space: nowrap; }\n.valve i { width: 6px; height: 6px; color: #97a69d; }\n.is-open .valve { background: #e1f2e2; color: #235e44; border-color: #cfe6d1; }\n.is-open .valve i { color: #278458; box-shadow: 0 0 0 2px #bde3c8; }\n.parcel-foot { display: flex; align-items: center; gap: 6px; color: #4e6358; font-size: 11px; margin-top: 11px; line-height: 1.4; }\n.parcel-foot svg { color: #5a8169; height: 15px; width: 15px; }\n.control-heading { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }\n.control-card label { font-weight: 680; font-size: 12px; display: block; line-height: 1.25; }\n.control-card select { display: block; width: 100%; appearance: none; margin: 5px 0 10px; padding: 8px 28px 8px 9px; border: 1px solid #dce5de; border-radius: 8px; background: #f9fbf8; font-size: 13px; color: var(--ink); min-height: 35px; background-image: linear-gradient(45deg, transparent 49%, #597065 50%), linear-gradient(135deg, #597065 50%, transparent 51%); background-position: calc(100% - 13px) 51%, calc(100% - 9px) 51%; background-size: 4px 4px; background-repeat: no-repeat; }\n.network { display: flex; justify-content: space-between; align-items: center; gap: 7px; margin: 1px 0 12px; padding: 9px 0 0; border-top: 1px solid #ebefea; }\n.network small { display: block; margin-top: 3px; font-size: 10px; }\n.switch { appearance: none; border: 1px solid #b0beb5; border-radius: 20px; background: #dbe3dd; width: 37px; height: 21px; flex: none; margin: 0; position: relative; }\n.switch::after { content: \"\"; background: white; position: absolute; left: 2px; top: 2px; height: 15px; width: 15px; border-radius: 50%; box-shadow: 0 1px 3px #1c473b37; transition: transform .14s ease; }\n.switch:checked { background: #976b29; border-color: #976b29; }\n.switch:checked::after { transform: translateX(16px); }\n.button { border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 7px; border-radius: 8px; padding: 8px 12px; min-height: 35px; font-size: 12px; font-weight: 700; white-space: nowrap; }\n.button svg { height: 15px; width: 15px; }\n.button.primary, .button.plain { display: flex; width: 100%; }\n.primary { background: #24684f; color: #fff; }\n.primary:hover:not(:disabled) { background: #1b513e; }\n.primary use[href=\"#i-play\"], .primary use[href=\"#i-stop\"] { fill: currentColor; }\n.plain { background: transparent; color: #49665a; margin: 3px 0 5px; }\n.plain:hover { background: #eef4ef; }\n.outline { border-color: #cfddd3; color: #235f48; background: white; }\n.outline:hover { background: #eef5ee; }\n.status-note { display: flex; gap: 7px; padding: 8px; background: #edf4f0; border: 1px solid #dcebe2; border-radius: 7px; color: #285540; line-height: 1.35; }\n.status-note svg { width: 15px; height: 15px; margin-top: 1px; }\n.status-note strong { font-size: 11px; display: block; }\n.status-note p { font-size: 10px; color: inherit; margin-top: 2px; }\n.status-note.alarm { color: #8b3527; background: #fcece6; border-color: #f5d7cd; }\n.status-note.warning { color: #784f14; background: #fff3df; border-color: #f3e2c1; }\n.history { margin-top: 17px; }\n.history .card-heading { margin-bottom: 7px; }\n.event-list { margin: 0; padding: 0; list-style: none; max-height: 248px; overflow: auto; }\n.event { display: grid; grid-template-columns: 27px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid #eef1ed; }\n.event-icon { color: #60756c; background: #f0f4ef; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; }\n.event-icon svg { width: 15px; height: 15px; }\n.event-icon.water { color: #216986; background: #e6f2f5; }\n.event-icon.success { color: #237550; background: #e6f2e6; }\n.event-icon.warning { color: #8b5717; background: #fff0d6; }\n.event-icon.alarm { color: #9a382b; background: #fce9e3; }\n.event strong { display: block; font-size: 11px; }\n.event p { margin-top: 2px; font-size: 10px; line-height: 1.35; }\n.event-meta { color: #52665c; font-size: 10px; white-space: nowrap; display: grid; justify-items: end; gap: 2px; }\n.event-meta .pending { color: #805311; }\n.experiment-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; margin-bottom: 17px; }\n.score { padding: 19px; }\n.score h2 { margin-bottom: 13px; }\n.score-metrics { display: grid; gap: 11px; grid-template-columns: repeat(2, minmax(0, 1fr)); }\n.score-metrics div { background: #f3f7f1; padding: 11px; border-radius: 8px; }\n.score.fixed .score-metrics div { background: #f6f3eb; }\n.score-metrics span { font-size: 11px; display: block; margin-bottom: 4px; color: var(--muted); }\n.score-metrics strong { font-size: clamp(18px, 2.4vw, 29px); letter-spacing: -.035em; white-space: nowrap; }\n.score-metrics small { font-size: 10px; }\n.score-meter { margin-top: 16px; height: 7px; border-radius: 8px; background: #e9eee7; overflow: hidden; }\n.score-meter span { display: block; height: 100%; background: #458766; }\n.score.fixed .score-meter span { background: #a98245; }\n.score > p { margin-top: 8px; font-size: 11px; }\n.table-scroll { overflow-x: auto; }\ntable { border-collapse: collapse; width: 100%; text-align: right; font-size: 13px; font-variant-numeric: tabular-nums; }\nth, td { padding: 9px 10px; border-bottom: 1px solid #e8eee8; white-space: nowrap; }\nth { background: #f2f6f0; font-weight: 650; color: #3c594d; }\nth[colspan] { text-align: center; }\nth:first-child[rowspan], tbody th { text-align: left; }\ntbody th { background: transparent; }\ntbody tr:nth-child(even) { background: #fafcf9; }\n.method { display: flex; gap: 10px; margin-top: 17px; color: var(--green); }\n.method h2 { font-size: 14px; color: var(--ink); }\n.method p { font-size: 12px; line-height: 1.55; margin-top: 4px; }\n#e4-run { margin-top: 12px; }\n.scene-layout, .integration-grid { display: grid; grid-template-columns: minmax(0, 2.13fr) minmax(265px, 1fr); gap: 17px; }\n.scene-card { padding: 9px; overflow: hidden; }\n.scene-stage { position: relative; overflow: hidden; border-radius: 9px; background: #e8f0e8; min-height: 360px; }\n#scene { width: 100%; height: clamp(380px, 53vw, 565px); display: block; outline-offset: -4px; cursor: grab; touch-action: none; }\n#scene:active { cursor: grabbing; }\n.scene-tag { position: absolute; top: 13px; left: 13px; display: inline-flex; gap: 7px; align-items: center; padding: 7px 9px; background: #ffffffda; color: #36554a; border: 1px solid #cdded3; border-radius: 8px; font-size: 11px; font-weight: 700; pointer-events: none; }\n.scene-tag svg, .camera-tools svg { width: 16px; height: 16px; }\n.spray-badge { position: absolute; left: 13px; bottom: 13px; display: flex; align-items: center; gap: 7px; background: #11546f; color: #effbff; border: 1px solid #71bfd3; border-radius: 8px; padding: 8px 10px; font-size: 12px; font-weight: 750; box-shadow: 0 3px 14px #07394a28; pointer-events: none; }\n.spray-badge svg { width: 15px; height: 15px; color: #8ee8fe; }\n.camera-tools { position: absolute; right: 12px; bottom: 12px; display: grid; gap: 5px; }\n.camera-tools button { display: grid; place-items: center; border: 1px solid #bfcfc4; width: 34px; height: 34px; border-radius: 7px; color: #244c3d; background: #fff; }\n.camera-tools button:hover { background: #e9f1e9; }\n.scene-foot { display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 10px 5px 1px; font-size: 11px; color: var(--muted); }\n.scene-legend { color: #256682; }\n.scene-legend i { color: #319cbb; }\n.scene-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }\n.scene-metrics span { padding: 12px 9px; background: #eef4f1; border: 1px solid #e3ebe5; border-radius: 8px; white-space: nowrap; }\n.scene-metrics b { color: #1c4b3b; font-size: 21px; letter-spacing: -.025em; }\n.scene-metrics small { font-size: 10px; margin-left: 5px; }\n.scene-metrics span small:first-child { display: block; margin: 0 0 4px; font-weight: 650; }\n.scene-sample { color: #475e55; margin-top: 7px; line-height: 1.4; font-size: 11px; }\n.sample-alarm { color: #963b2d; font-weight: 700; }\n.scene-sectors { margin: 17px 0; padding: 0; list-style: none; }\n.scene-sectors li { display: grid; grid-template-columns: 29px 1fr auto; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px solid #ecf0ea; font-size: 12px; }\n.scene-sectors li:last-child { border-bottom: 1px solid #ecf0ea; }\n.scene-sectors li b { display: grid; place-items: center; border-radius: 5px; background: #eff4ec; color: #427052; width: 28px; height: 25px; }\n.scene-sectors li.is-open b { background: #dff2f4; color: #176483; }\n.scene-sectors .valve-text { font-size: 10px; color: #546660; }\n.scene-sectors .is-open .valve-text { font-weight: 700; color: #176483; }\n.scene-details .primary { margin-top: 12px; }\n.scene-fault-label { display: block; color: var(--ink); font-size: 12px; font-weight: 650; margin-bottom: 5px; }\n.scene-fault { width: 100%; font-size: 13px; color: var(--ink); background: #f9fbf8; border: 1px solid #dce5de; border-radius: 7px; padding: 7px; margin-bottom: 10px; }\n.integration-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }\n.integration-card label { display: block; font-size: 13px; color: var(--ink); font-weight: 650; margin: 16px 0 7px; }\n.integration-card select { width: 100%; border: 1px solid #dce5de; border-radius: 7px; padding: 9px; background: #f9fbf8; color: var(--ink); font-size: 13px; }\n.integration-card select:disabled { cursor: default; }\n.integration-card .status-note { margin-top: 14px; }\n.endpoint { margin-top: 11px; font: 11px/1.4 Consolas, \"IBM Plex Mono\", monospace; overflow-wrap: anywhere; }\n.protocol-stats { margin: 10px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }\n.protocol-stats div { border-radius: 7px; padding: 9px; background: #f1f6f2; }\n.protocol-stats dt { color: var(--muted); font-size: 11px; }\n.protocol-stats dd { margin: 4px 0 0; font-size: 15px; color: #204638; font-weight: 700; font-variant-numeric: tabular-nums; }\n.integration-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }\n.integration-links a { display: inline-flex; align-items: center; gap: 4px; color: #255e47; font-size: 12px; font-weight: 700; }\n.integration-links svg { width: 14px; height: 14px; }\n.central-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }\n.farm-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }\n.farm-card .card-heading { align-items: flex-start; }\n.farm-card .protocol-stats { margin: 12px 0; }\n.farm-card .protocol-stats dd { font-size: 13px; }\n.farm-moisture { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; }\n.farm-moisture span { display: grid; gap: 3px; text-align: center; color: #294b3e; background: #edf3eb; border-radius: 5px; padding: 6px 2px; font-size: 11px; }\n.farm-moisture b { font-size: 10px; }\n.farm-age, .central-note { font-size: 11px; line-height: 1.45; color: var(--muted); }\n.central-note { margin: 14px 0; }\n@media (max-width: 1050px) {\n  .farm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }\n}\n@media (max-width: 600px) {\n  .central-summary, .farm-grid { grid-template-columns: 1fr; }\n}\n@media (min-width: 1250px) {\n  .main { padding: 27px 35px 37px; }\n  .card { padding: 19px; }\n  .sector-body { padding: 11px 13px; }\n  .valve { padding: 7px 13px; }\n  .metrics { gap: 16px; }\n  .metric { padding: 14px 16px; }\n}\n@media (max-width: 1020px) {\n  .shell { grid-template-columns: 173px minmax(0, 1fr); }\n  .sidebar { padding-inline: 12px; }\n  .brand { gap: 7px; }\n  .brand strong { font-size: 17px; }\n  .brand-mark { width: 36px; height: 36px; }\n  .main { padding-inline: 19px; }\n  .metric { padding: 10px; grid-template-columns: 30px minmax(0, 1fr); column-gap: 6px; }\n  .metric > .metric-icon { width: 30px; height: 30px; }\n}\n@media (max-width: 800px) {\n  .shell { display: block; }\n  .sidebar { height: auto; position: static; padding: 11px 16px; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 7px; }\n  .brand { margin: 0; }\n  .navigation { display: flex; flex-wrap: wrap; }\n  .nav-button { width: auto; padding: 7px; font-size: 11px; gap: 5px; }\n  .nav-button svg { width: 14px; height: 14px; }\n  .sidebar-end { display: none; }\n  .main { padding-top: 15px; }\n  .scene-layout { grid-template-columns: 1fr; }\n}\n@media (max-width: 590px) {\n  .main { padding: 13px 12px 26px; }\n  .page-heading { align-items: flex-start; flex-direction: column; gap: 10px; margin: 18px 0 15px; }\n  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }\n  .main-grid, .experiment-grid, .integration-grid { grid-template-columns: 1fr; gap: 12px; }\n  .scene-stage { min-height: 340px; }\n  #scene { height: 350px; }\n  .scene-foot { font-size: 10px; }\n  .card { padding: 13px; }\n  .history, .method { margin-top: 12px; }\n  .sector-reading strong { font-size: 25px; }\n}\n@media (max-width: 380px) {\n  .sector-reading span { font-size: 9px; }\n  .sector-reading strong { font-size: 22px; }\n  .sector-body, .valve { padding-inline: 6px; }\n}\n@media (prefers-reduced-motion: reduce) {\n  *, *::after { transition: none !important; }\n}\n</style>\n</head>\n<body>\n  <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"symbols\" aria-hidden=\"true\">\n    <symbol id=\"i-leaf\" viewBox=\"0 0 24 24\"><path d=\"M20 4C11 4 5 8 5 14a5 5 0 0 0 5 5c6 0 10-6 10-15Z\"/><path d=\"M4 21c3-4 7-8 11-11\"/></symbol>\n    <symbol id=\"i-grid\" viewBox=\"0 0 24 24\"><rect x=\"4\" y=\"4\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"14\" y=\"4\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"4\" y=\"14\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"6\" height=\"6\" rx=\"1\"/></symbol>\n    <symbol id=\"i-chart\" viewBox=\"0 0 24 24\"><path d=\"M4 4v16h16M9 15v-4m5 4V7m5 8V4\"/></symbol>\n    <symbol id=\"i-pin\" viewBox=\"0 0 24 24\"><path d=\"M19 10c0 5-7 10-7 10S5 15 5 10a7 7 0 0 1 14 0Z\"/><circle cx=\"12\" cy=\"10\" r=\"2\"/></symbol>\n    <symbol id=\"i-water\" viewBox=\"0 0 24 24\"><path d=\"M12 3s-6 7-6 11a6 6 0 0 0 12 0c0-4-6-11-6-11Z\"/><path d=\"M9 14a3 3 0 0 0 3 3\"/></symbol>\n    <symbol id=\"i-flow\" viewBox=\"0 0 24 24\"><path d=\"M3 8h17m-4-4 4 4-4 4M21 16H4m4-4-4 4 4 4\"/></symbol>\n    <symbol id=\"i-gauge\" viewBox=\"0 0 24 24\"><path d=\"M4 18a9 9 0 1 1 16 0H4Zm8-4 4-5\"/><circle cx=\"12\" cy=\"14\" r=\"1\"/></symbol>\n    <symbol id=\"i-valve\" viewBox=\"0 0 24 24\"><path d=\"M3 8v8l9-4-9-4Zm18 0v8l-9-4 9-4ZM12 12V5m-4 0h8\"/></symbol>\n    <symbol id=\"i-sliders\" viewBox=\"0 0 24 24\"><path d=\"M4 7h7m4 0h5M4 17h3m4 0h9\"/><circle cx=\"13\" cy=\"7\" r=\"2\"/><circle cx=\"9\" cy=\"17\" r=\"2\"/></symbol>\n    <symbol id=\"i-wifi\" viewBox=\"0 0 24 24\"><path d=\"M4 9a12 12 0 0 1 16 0M7 13a8 8 0 0 1 10 0m-7 4a3 3 0 0 1 4 0\"/><circle cx=\"12\" cy=\"20\" r=\".5\"/></symbol>\n    <symbol id=\"i-play\" viewBox=\"0 0 24 24\"><path d=\"m8 5 11 7-11 7V5Z\"/></symbol>\n    <symbol id=\"i-stop\" viewBox=\"0 0 24 24\"><rect x=\"7\" y=\"7\" width=\"10\" height=\"10\" rx=\"1\"/></symbol>\n    <symbol id=\"i-reset\" viewBox=\"0 0 24 24\"><path d=\"M5 10a7 7 0 1 1 1 7m-2-7V5m0 5h5\"/></symbol>\n    <symbol id=\"i-activity\" viewBox=\"0 0 24 24\"><path d=\"M3 12h5l3-7 3 14 3-7h4\"/></symbol>\n    <symbol id=\"i-info\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 11v5m0-8h.01\"/></symbol>\n    <symbol id=\"i-check\" viewBox=\"0 0 24 24\"><path d=\"m5 12 4 4L19 6\"/></symbol>\n    <symbol id=\"i-alert\" viewBox=\"0 0 24 24\"><path d=\"M12 4 2.8 19a.6.6 0 0 0 .5 1h17.4a.6.6 0 0 0 .5-1L12 4Zm0 6v4m0 3h.01\"/></symbol>\n    <symbol id=\"i-clock\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l3 2\"/></symbol>\n    <symbol id=\"i-download\" viewBox=\"0 0 24 24\"><path d=\"M12 4v11m-4-4 4 4 4-4M5 16v4h14v-4\"/></symbol>\n    <symbol id=\"i-arrow\" viewBox=\"0 0 24 24\"><path d=\"M5 12h14m-6-6 6 6-6 6\"/></symbol>\n    <symbol id=\"i-cube\" viewBox=\"0 0 24 24\"><path d=\"m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Zm0 9 8-4.5M12 12 4 7.5M12 12v9\"/></symbol>\n    <symbol id=\"i-chip\" viewBox=\"0 0 24 24\"><rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2\"/><path d=\"M9 3v3m6-3v3m-6 12v3m6-3v3M3 9h3m-3 6h3m12-6h3m-3 6h3\"/><rect x=\"10\" y=\"10\" width=\"4\" height=\"4\" rx=\".5\"/></symbol>\n    <symbol id=\"i-plus\" viewBox=\"0 0 24 24\"><path d=\"M12 5v14m-7-7h14\"/></symbol>\n    <symbol id=\"i-minus\" viewBox=\"0 0 24 24\"><path d=\"M5 12h14\"/></symbol>\n  </svg>\n\n  <div class=\"shell\">\n    <aside class=\"sidebar\">\n      <div class=\"brand\">\n        <span class=\"brand-mark\"><svg><use href=\"#i-leaf\"/></svg></span>\n        <span><strong>RiegoGuard</strong><small>TACNA, PERÚ</small></span>\n      </div>\n      <nav class=\"navigation\" aria-label=\"Vistas del sistema\">\n        <button class=\"nav-button current\" data-view=\"simulation\" aria-current=\"page\"><svg><use href=\"#i-grid\"/></svg> Simulación</button>\n        <button class=\"nav-button\" data-view=\"parcel3d\"><svg><use href=\"#i-cube\"/></svg> Parcela 3D</button>\n        <button class=\"nav-button\" data-view=\"integration\"><svg><use href=\"#i-chip\"/></svg> Enlace ESP32</button>\n        <button class=\"nav-button\" data-view=\"central\"><svg><use href=\"#i-activity\"/></svg> Central de parcelas</button>\n        <button class=\"nav-button\" data-view=\"experiment\"><svg><use href=\"#i-chart\"/></svg> Comparativa E4</button>\n        <a class=\"nav-button\" id=\"native-link\" href=\"/riego/medidores\" target=\"_top\" hidden><svg><use href=\"#i-gauge\"/></svg> Medidores</a>\n      </nav>\n      <div class=\"sidebar-end\">\n        <span class=\"sidebar-device\"><svg><use href=\"#i-activity\"/></svg></span>\n        <span><b id=\"runtime-title\">Simulador interno</b><small id=\"runtime-caption\">Modo autónomo</small></span>\n      </div>\n    </aside>\n\n    <main class=\"main\">\n      <header class=\"topline\">\n        <span><svg><use href=\"#i-pin\"/></svg> Parcela de ensayo</span>\n        <div class=\"system-pills\">\n          <span class=\"pill neutral\" id=\"runtime-pill\"><i></i><span id=\"runtime-pill-label\">Simulador interno</span></span>\n          <span class=\"pill online\" id=\"connection\"><i></i><span id=\"connection-label\">En línea</span></span>\n        </div>\n      </header>\n      <p id=\"command-feedback\" class=\"command-feedback\" role=\"status\" hidden></p>\n\n      <section id=\"simulation\" aria-labelledby=\"simulation-title\">\n        <div class=\"page-heading\">\n          <div><h1 id=\"simulation-title\">Panel de riego</h1><p>Monitorea la humedad, las válvulas y la conducción compartida.</p></div>\n          <span class=\"clock\"><svg><use href=\"#i-clock\"/></svg><span id=\"clock\">Día 1 · 06:00</span></span>\n        </div>\n\n        <div class=\"metrics\" aria-label=\"Indicadores de la conducción\">\n          <article class=\"metric\"><span class=\"metric-icon blue\"><svg><use href=\"#i-flow\"/></svg></span><span>Caudal en la válvula</span><strong><b id=\"flow\">0,0</b> <small>L/min</small></strong><small class=\"metric-caption\" id=\"flow-caption\"></small></article>\n          <article class=\"metric\"><span class=\"metric-icon lavender\"><svg><use href=\"#i-gauge\"/></svg></span><span>Presión en la válvula</span><strong><b id=\"pressure\">0,0</b> <small>bar</small></strong><small class=\"metric-caption\" id=\"pressure-caption\"></small></article>\n          <article class=\"metric\"><span class=\"metric-icon green\"><svg><use href=\"#i-valve\"/></svg></span><span>Válvulas abiertas</span><strong><b id=\"active\">0</b> <small>/ 4</small></strong></article>\n          <article class=\"metric\"><span class=\"metric-icon amber\"><svg><use href=\"#i-water\"/></svg></span><span>Agua aplicada</span><strong><b id=\"total\">0</b> <small>L</small></strong></article>\n        </div>\n\n        <div class=\"main-grid\">\n          <section class=\"card parcel-card\" aria-labelledby=\"parcel-title\">\n            <div class=\"card-heading\">\n              <div><h2 id=\"parcel-title\">Mapa de la parcela</h2><p>4 sectores · 400 m²</p></div>\n              <span class=\"legend\"><i></i> Regando</span>\n            </div>\n            <div class=\"parcel\" id=\"parcel\"></div>\n            <div class=\"parcel-foot\"><svg><use href=\"#i-info\"/></svg><span>Banda objetivo <b>35–45 %</b> · Máximo <b>1 válvula abierta</b></span></div>\n          </section>\n\n          <section class=\"card control-card\" aria-labelledby=\"control-title\">\n            <div class=\"control-heading\"><span class=\"metric-icon green\"><svg><use href=\"#i-sliders\"/></svg></span><div><h2 id=\"control-title\">Controles</h2><p>Ajustes de la simulación</p></div></div>\n            <label for=\"mode\">Estrategia de riego</label>\n            <select id=\"mode\"><option value=\"auto\">Automatizado</option><option value=\"fixed\">Horario fijo</option></select>\n            <label for=\"fault\">Condición hidráulica</label>\n            <select id=\"fault\"><option value=\"normal\">Normal</option><option value=\"flow\">Caudal bajo</option><option value=\"pressure\">Presión baja</option></select>\n            <div class=\"network\">\n              <div><label for=\"offline\">Cortar conexión</label><small>Enlace con el registro de eventos</small></div>\n              <input type=\"checkbox\" id=\"offline\" role=\"switch\" class=\"switch\">\n            </div>\n            <button id=\"start\" class=\"button primary\"><svg><use id=\"start-icon\" href=\"#i-play\"/></svg><span id=\"start-label\">Iniciar riego</span></button>\n            <button id=\"pause\" class=\"button plain\" hidden><svg><use href=\"#i-stop\"/></svg> Pausar controlador</button>\n            <button id=\"reset\" class=\"button plain\"><svg><use href=\"#i-reset\"/></svg> Reiniciar simulación</button>\n            <div class=\"status-note\" id=\"status-note\" role=\"status\">\n              <svg><use id=\"note-icon\" href=\"#i-info\"/></svg>\n              <div><strong id=\"note-title\">Sistema en espera</strong><p id=\"note-detail\">Inicia el riego para activar el controlador.</p></div>\n            </div>\n          </section>\n        </div>\n\n        <section class=\"card history\" aria-labelledby=\"history-title\">\n          <div class=\"card-heading\">\n            <div><h2 id=\"history-title\">Registro de eventos</h2><p>Aperturas, cierres y cambios de conexión</p></div>\n            <span class=\"pill neutral\" id=\"queue\"><svg><use href=\"#i-clock\"/></svg><span id=\"queue-label\">0 pendientes</span></span>\n          </div>\n          <ul id=\"events\" class=\"event-list\"></ul>\n        </section>\n      </section>\n\n      <section id=\"parcel3d\" aria-labelledby=\"parcel3d-title\" hidden>\n        <div class=\"page-heading\">\n          <div><h1 id=\"parcel3d-title\">Parcela 3D</h1><p>Recorre la parcela y sigue el agua hasta el sector activo.</p></div>\n          <span class=\"clock\"><svg><use href=\"#i-clock\"/></svg><span id=\"clock3d\">Día 1 · 06:00</span></span>\n        </div>\n        <div class=\"scene-layout\">\n          <section class=\"card scene-card\" aria-label=\"Escena interactiva\">\n            <div class=\"scene-stage\">\n              <canvas id=\"scene\" tabindex=\"0\" aria-label=\"Parcela en 3D. Arrastra o usa las flechas para orbitar. Usa más y menos para acercar o alejar.\"></canvas>\n              <div class=\"scene-tag\"><svg><use href=\"#i-cube\"/></svg> Parcela de 400 m²</div>\n              <div class=\"spray-badge\" id=\"scene-spray\" hidden><svg><use href=\"#i-water\"/></svg><span id=\"scene-spray-label\"></span></div>\n              <div class=\"camera-tools\" aria-label=\"Controles de cámara\">\n                <button id=\"zoom-in\" type=\"button\" aria-label=\"Acercar\" title=\"Acercar\"><svg><use href=\"#i-plus\"/></svg></button>\n                <button id=\"zoom-out\" type=\"button\" aria-label=\"Alejar\" title=\"Alejar\"><svg><use href=\"#i-minus\"/></svg></button>\n                <button id=\"camera-reset\" type=\"button\" aria-label=\"Restablecer cámara\" title=\"Restablecer cámara\"><svg><use href=\"#i-reset\"/></svg></button>\n              </div>\n            </div>\n            <div class=\"scene-foot\"><span>Arrastra para girar · Desplaza para acercar</span><span class=\"legend scene-legend\"><i></i> Paso de agua</span></div>\n          </section>\n          <section class=\"card scene-details\" aria-labelledby=\"scene-details-title\">\n            <div class=\"control-heading\"><span class=\"metric-icon blue\"><svg><use href=\"#i-water\"/></svg></span><div><h2 id=\"scene-details-title\">Conducción</h2><p id=\"scene-source\">Simulador interno</p></div></div>\n            <div class=\"scene-metrics\"><span><small>Caudal</small><b id=\"scene-flow\">0,0</b><small>L/min</small></span><span><small>Presión</small><b id=\"scene-pressure\">0,0</b><small>bar</small></span></div>\n            <p id=\"scene-sample\" class=\"scene-sample\"></p>\n            <ul class=\"scene-sectors\" id=\"scene-sectors\"></ul>\n            <label class=\"scene-fault-label\" for=\"scene-fault\">Condición hidráulica</label>\n            <select class=\"scene-fault\" id=\"scene-fault\"><option value=\"normal\">Normal</option><option value=\"flow\">Caudal bajo</option><option value=\"pressure\">Presión baja</option></select>\n            <div class=\"status-note\" id=\"scene-status\" role=\"status\"><svg><use id=\"scene-status-icon\" href=\"#i-info\"/></svg><div><strong id=\"scene-status-title\">Sistema en espera</strong><p id=\"scene-status-detail\">Inicia el riego para activar el controlador.</p></div></div>\n            <button id=\"scene-start\" class=\"button primary\"><svg><use id=\"scene-start-icon\" href=\"#i-play\"/></svg><span id=\"scene-start-label\">Iniciar riego</span></button>\n            <button id=\"scene-pause\" class=\"button plain\" hidden><svg><use href=\"#i-stop\"/></svg> Pausar controlador</button>\n            <button id=\"scene-controls\" class=\"button plain\">Ver controles hidráulicos <svg><use href=\"#i-arrow\"/></svg></button>\n          </section>\n        </div>\n      </section>\n\n      <section id=\"integration\" aria-labelledby=\"integration-title\" hidden>\n        <div class=\"page-heading\">\n          <div><h1 id=\"integration-title\">Enlace ESP32</h1><p>Comprueba las tramas que llegan al panel y la confirmación de las válvulas.</p></div>\n          <span class=\"pill neutral\" id=\"esp-pill\"><i></i><span id=\"esp-status\">En espera</span></span>\n        </div>\n        <div class=\"integration-grid\">\n          <section class=\"card integration-card\" aria-labelledby=\"link-title\">\n            <div class=\"control-heading\"><span class=\"metric-icon green\"><svg><use href=\"#i-chip\"/></svg></span><div><h2 id=\"link-title\">Fuente de control</h2><p id=\"link-subtitle\">Demo en navegador</p></div></div>\n            <label for=\"source\">Origen del suelo y la hidráulica</label>\n            <select id=\"source\"><option value=\"wokwi\">ESP32 externo (Wokwi)</option><option value=\"local\">Simulador interno</option></select>\n            <div id=\"local-hint\" class=\"status-note\"><svg><use href=\"#i-info\"/></svg><div><strong>Abre el panel de Node-RED para conectar Wokwi</strong><p>Ejecuta Iniciar-Node-RED.cmd desde la carpeta del proyecto.</p></div></div>\n            <div id=\"external-hint\" class=\"status-note\" hidden><svg><use href=\"#i-wifi\"/></svg><div><strong id=\"external-hint-title\">Esperando telemetría</strong><p id=\"external-hint-detail\">Abre el proyecto wokwi en VS Code y arranca el ESP32.</p></div></div>\n            <p class=\"endpoint\" id=\"esp-endpoint\"></p>\n          </section>\n          <section class=\"card integration-card\" aria-labelledby=\"frames-title\">\n            <div class=\"control-heading\"><span class=\"metric-icon blue\"><svg><use href=\"#i-activity\"/></svg></span><div><h2 id=\"frames-title\">Actividad en vivo</h2><p>Contadores del proceso y del enlace HTTP</p></div></div>\n            <dl class=\"protocol-stats\">\n              <div><dt>Tramas del flujo</dt><dd id=\"frame-count\">—</dd></div><div><dt>Pulsos de reloj</dt><dd id=\"tick-count\">—</dd></div>\n              <div><dt>Paquetes ESP32</dt><dd id=\"esp-count\">—</dd></div><div><dt>Último paquete</dt><dd id=\"esp-last\">—</dd></div>\n              <div><dt>Consigna al ESP32</dt><dd id=\"desired-valve\">—</dd></div><div><dt>Confirmación por GPIO</dt><dd id=\"actual-valve\">—</dd></div>\n              <div><dt>Caudal del potenciómetro</dt><dd id=\"esp-flow\">—</dd></div><div><dt>Presión del potenciómetro</dt><dd id=\"esp-pressure\">—</dd></div>\n              <div><dt>Temperatura del aire</dt><dd id=\"esp-temperature\">—</dd></div><div><dt>Humedad del aire</dt><dd id=\"esp-air-humidity\">—</dd></div>\n              <div><dt>Perillas S1–S4</dt><dd id=\"esp-knobs\">—</dd></div><div><dt>Suelo modelado S1–S4</dt><dd id=\"esp-soil\">—</dd></div>\n              <div><dt>Órdenes recibidas</dt><dd id=\"action-count\">—</dd></div><div><dt>Última orden</dt><dd id=\"last-action\">—</dd></div>\n            </dl>\n            <div class=\"integration-links\" id=\"integration-links\" hidden><a id=\"editor-link\" href=\"/\" target=\"_top\">Abrir editor <svg><use href=\"#i-arrow\"/></svg></a><a id=\"state-link\" href=\"/riegoguard/estado\" target=\"_top\">Ver estado JSON <svg><use href=\"#i-arrow\"/></svg></a></div>\n          </section>\n        </div>\n      </section>\n\n      <section id=\"central\" aria-labelledby=\"central-title\" hidden>\n        <div class=\"page-heading\">\n          <div><h1 id=\"central-title\">Central de parcelas</h1><p>Lecturas por zona y métricas acumuladas de los paquetes aceptados.</p></div>\n          <button class=\"button outline\" id=\"central-download\"><svg><use href=\"#i-download\"/></svg> Descargar CSV</button>\n        </div>\n        <div class=\"metrics central-summary\">\n          <article class=\"metric\"><span class=\"metric-icon green\"><svg><use href=\"#i-wifi\"/></svg></span><span>Parcelas con datos vigentes</span><strong id=\"central-online\">0 / 3</strong></article>\n          <article class=\"metric\"><span class=\"metric-icon lavender\"><svg><use href=\"#i-activity\"/></svg></span><span>Muestras válidas de suelo</span><strong id=\"central-samples\">0</strong></article>\n          <article class=\"metric\"><span class=\"metric-icon blue\"><svg><use href=\"#i-water\"/></svg></span><span>Volumen estimado</span><strong><b id=\"central-volume\">0,0</b> <small>L</small></strong></article>\n        </div>\n        <div class=\"farm-grid\" id=\"farm-grid\"></div>\n        <div class=\"card method\"><svg><use href=\"#i-wifi\"/></svg><div><h2>Enlace de Packet Tracer</h2><p id=\"packet-status\">Esperando el diagnóstico de la pasarela.</p></div></div>\n        <p class=\"central-note\" id=\"central-note\">Abre el panel desde Node-RED para recibir muestras de Wokwi y Packet Tracer.</p>\n      </section>\n\n      <section id=\"experiment\" aria-labelledby=\"experiment-title\" hidden>\n        <div class=\"page-heading\">\n          <div><h1 id=\"experiment-title\">Comparativa E4</h1><p>Siete días virtuales por estrategia en la misma parcela.</p></div>\n          <button class=\"button outline\" id=\"download\" disabled><svg><use href=\"#i-download\"/></svg> Descargar CSV</button>\n        </div>\n        <div class=\"card method\"><svg><use href=\"#i-info\"/></svg><div><h2>Condiciones del ensayo</h2><p id=\"e4-input\" role=\"status\">Esperando una captura de la sesión.</p><p>Ambas estrategias comparten el suelo, caudal y presión capturados, el mismo secado y un paso de 1 minuto. El horario fijo asigna 12 minutos diarios a cada sector, desde las 06:00. E4 proyecta siete días virtuales.</p><button class=\"button outline\" id=\"e4-run\">Capturar datos y ejecutar E4</button></div></div>\n        <div class=\"experiment-grid\" id=\"summary\"></div>\n        <section class=\"card daily-card\" id=\"e4-daily\" aria-labelledby=\"daily-title\" hidden>\n          <div class=\"card-heading\"><div><h2 id=\"daily-title\">Resultados por día</h2><p>Consumo por superficie y proporción de tiempo dentro de 35–45 %.</p></div></div>\n          <div class=\"table-scroll\"><table>\n            <thead><tr><th rowspan=\"2\" scope=\"col\">Día</th><th scope=\"colgroup\" colspan=\"2\">Automatizado</th><th scope=\"colgroup\" colspan=\"2\">Horario fijo</th></tr>\n              <tr><th scope=\"col\">L/m²/día</th><th scope=\"col\">En banda</th><th scope=\"col\">L/m²/día</th><th scope=\"col\">En banda</th></tr></thead>\n            <tbody id=\"daily-results\"></tbody>\n          </table></div>\n        </section>\n      </section>\n    </main>\n  </div>\n  <script>'use strict';\n\nconst RiegoGuard = (() => {\n  const SECTORS = [\n    { id: 'S1', area: 100, initial: 34, drying: 3.2 },\n    { id: 'S2', area: 100, initial: 38, drying: 3.8 },\n    { id: 'S3', area: 100, initial: 36.5, drying: 4.4 },\n    { id: 'S4', area: 100, initial: 41, drying: 3.5 }\n  ];\n  const CONFIG = Object.freeze({\n    lower: 35, upper: 45, flow: 12, pressure: 1.8, minFlow: 7, minPressure: 1.2,\n    confirmationMinutes: 2, gain: 0.35, scheduleStart: 360, slot: 12, days: 7,\n    knobDelta: 0.5, maxAutoMinutes: 240\n  });\n  const MODES = { auto: 'Automatizado', fixed: 'Horario fijo' };\n  const FAULTS = { normal: 'Normal', flow: 'Caudal bajo', pressure: 'Presión baja' };\n  const DAY = 1440;\n  const liquid = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1 });\n  const clock = (minute) => {\n    const hours = String(Math.floor((minute % DAY) / 60)).padStart(2, '0');\n    const minutes = String(minute % 60).padStart(2, '0');\n    return `${hours}:${minutes}`;\n  };\n\n  function create(mode = 'auto', minute = CONFIG.scheduleStart, record = true) {\n    const state = {\n      mode, minute, running: false, online: true, fault: 'normal', active: null,\n      lock: null, supply: null, measured: false, sampleKey: null, soilBoot: null, lastSample: null,\n      openedAt: null,\n      abnormalMinutes: 0, total: 0, sequence: 0, confirmed: 0,\n      events: [], pending: [], lastSync: null, record,\n      sectors: SECTORS.map(({ id, area, initial, drying }) => ({\n        id, area, moisture: initial, drying, liters: 0, valid: true, knob: null\n      }))\n    };\n    log(state, 'Sistema listo', 'Controlador ESP32 simulado. Válvulas cerradas.', 'info');\n    return state;\n  }\n\n  function log(state, title, detail, kind = 'info') {\n    if (!state.record) return;\n    const event = { id: ++state.sequence, minute: state.minute, title, detail, kind };\n    if (state.online) {\n      state.confirmed++;\n    } else {\n      state.pending.push(event);\n    }\n    state.events.unshift(event);\n    state.events.length = Math.min(state.events.length, 100);\n  }\n\n  function upstream(state) {\n    const flow = state.supply?.flow ?? CONFIG.flow;\n    const pressure = state.supply?.pressure ?? CONFIG.pressure;\n    return {\n      flow: state.fault === 'flow' ? Math.min(3, flow) : flow,\n      pressure: state.fault === 'pressure' ? Math.min(0.7, pressure) : pressure\n    };\n  }\n\n  function readings(state) {\n    return state.active === null ? { flow: 0, pressure: 0 } : upstream(state);\n  }\n\n  function saveSample(state) {\n    if (state.active === null) return;\n    state.lastSample = { ...readings(state), sector: state.sectors[state.active].id, time: clock(state.minute) };\n  }\n\n  function openValve(state, sector) {\n    state.active = sector;\n    state.openedAt = state.minute;\n    state.abnormalMinutes = 0;\n    if (state.record) saveSample(state);\n    const reason = state.mode === 'auto' ? 'Umbral de apertura alcanzado.' : 'Inicio del turno programado.';\n    log(state, `Válvula ${state.sectors[sector].id} abierta`, reason, 'water');\n  }\n\n  function closeValve(state, reason, kind = 'info') {\n    if (state.active === null) return;\n    const id = state.sectors[state.active].id;\n    state.active = null;\n    state.openedAt = null;\n    state.abnormalMinutes = 0;\n    log(state, `Válvula ${id} cerrada`, reason, kind);\n  }\n\n  function selectValve(state) {\n    if (!state.running || state.lock || state.active !== null) return;\n    if (state.mode === 'fixed') {\n      const offset = (state.minute % DAY) - CONFIG.scheduleStart;\n      if (offset >= 0 && offset < SECTORS.length * CONFIG.slot && offset % CONFIG.slot === 0) {\n        const sector = offset / CONFIG.slot;\n        if (state.sectors[sector].valid) openValve(state, sector);\n      }\n      return;\n    }\n    const sector = state.sectors.reduce((driest, item, index) => (\n      item.valid && item.moisture <= CONFIG.lower && (driest === null || item.moisture < state.sectors[driest].moisture)\n        ? index : driest\n    ), null);\n    if (sector !== null) openValve(state, sector);\n  }\n\n  function waitMinutes(state) {\n    if (state.mode === 'fixed') {\n      const offset = state.minute % DAY - CONFIG.scheduleStart;\n      if (offset < 0) return -offset;\n      const next = Math.ceil(offset / CONFIG.slot) * CONFIG.slot;\n      return next < SECTORS.length * CONFIG.slot ? next - offset : DAY - offset;\n    }\n    if (state.measured) return null;\n    return Math.max(0, Math.min(...state.sectors.map(({ moisture, drying }) =>\n      Math.ceil((moisture - CONFIG.lower) * DAY / drying)\n    )));\n  }\n\n  function openNextTurn(state) {\n    if (!state.running || state.lock || state.active !== null) return;\n    const minutes = waitMinutes(state);\n    if (minutes > 0) {\n      for (const sector of state.sectors) {\n        if (state.measured && !sector.valid) continue;\n        const moisture = sector.moisture - sector.drying * minutes / DAY;\n        sector.moisture = Math.abs(moisture - CONFIG.lower) < 1e-8 ? CONFIG.lower : Math.max(0, moisture);\n      }\n      state.minute += minutes;\n      log(state, 'Reloj adelantado', `Se omitieron ${minutes} minutos virtuales sin riego hasta el siguiente turno.`);\n    }\n    selectValve(state);\n  }\n\n  function confirmHydraulics(state) {\n    if (state.active === null) return;\n    if (state.record) saveSample(state);\n    const sample = readings(state);\n    const lowFlow = sample.flow < CONFIG.minFlow;\n    const lowPressure = sample.pressure < CONFIG.minPressure;\n    state.abnormalMinutes = lowFlow || lowPressure ? state.abnormalMinutes + 1 : 0;\n    if (state.abnormalMinutes < CONFIG.confirmationMinutes) return;\n    const reason = lowFlow\n      ? `Caudal bajo · ${sample.flow} L/min (mín. ${CONFIG.minFlow} L/min).`\n      : `Presión baja · ${liquid.format(sample.pressure)} bar (mín. ${liquid.format(CONFIG.minPressure)} bar).`;\n    state.lock = { sector: state.sectors[state.active].id, reason, ...sample };\n    state.running = false;\n    closeValve(state, reason, 'alarm');\n  }\n\n  function canRearm(state) {\n    if (!state.lock) return true;\n    const { flow, pressure } = upstream(state);\n    return state.fault === 'normal' && (!state.measured || state.supply !== null)\n      && flow >= CONFIG.minFlow && pressure >= CONFIG.minPressure;\n  }\n\n  function setSupply(state, measured, packet) {\n    if (state.measured !== measured) {\n      state.sampleKey = null;\n      state.soilBoot = null;\n    }\n    state.measured = measured;\n    state.supply = measured ? packet : null;\n    if (!measured || !packet) {\n      for (const sector of state.sectors) sector.valid = !measured;\n      return;\n    }\n    const key = packet.boot + ':' + packet.seq;\n    if (state.sampleKey === key) return;\n    state.sampleKey = key;\n    const newBoot = state.soilBoot !== packet.boot;\n    state.soilBoot = packet.boot;\n    state.sectors.forEach((sector, index) => {\n      const value = packet.soil[index];\n      if (value !== null && (newBoot || sector.knob === null || Math.abs(value - sector.knob) >= CONFIG.knobDelta - 1e-8)) {\n        sector.moisture = value;\n        sector.knob = value;\n      }\n      if (value === null) sector.knob = null;\n      sector.valid = value !== null;\n    });\n    if (state.active === null) return;\n    const sector = state.sectors[state.active];\n    if (!sector.valid) closeValve(state, 'Humedad de suelo sin lectura válida.', 'alarm');\n    else if (state.mode === 'auto' && sector.moisture >= CONFIG.upper) {\n      closeValve(state, `Objetivo del ${CONFIG.upper} % alcanzado.`, 'success');\n    } else confirmHydraulics(state);\n  }\n\n  function step(state) {\n    if (!state.running) {\n      if (state.measured && state.supply) applySoilMinute(state, 0);\n      return;\n    }\n    selectValve(state);\n    if (!state.measured) confirmHydraulics(state);\n    const confirmed = !state.measured || (state.active !== null && state.supply?.valve === state.active + 1);\n    applySoilMinute(state, confirmed ? readings(state).flow : 0);\n    state.minute++;\n\n    if (state.active === null) return;\n    if (state.mode === 'auto' && state.sectors[state.active].moisture >= CONFIG.upper) {\n      closeValve(state, `Objetivo del ${CONFIG.upper} % alcanzado.`, 'success');\n    } else if (state.mode === 'auto' && state.minute - state.openedAt >= CONFIG.maxAutoMinutes) {\n      const reason = `Límite de ${CONFIG.maxAutoMinutes} minutos virtuales sin alcanzar la humedad objetivo.`;\n      state.lock = { sector: state.sectors[state.active].id, reason, ...readings(state) };\n      state.running = false;\n      closeValve(state, reason, 'alarm');\n    } else if (state.mode === 'fixed' && (state.minute % DAY - CONFIG.scheduleStart) % CONFIG.slot === 0) {\n      closeValve(state, 'Turno programado completado.', 'success');\n    }\n  }\n\n  function applySoilMinute(state, flow) {\n    state.sectors.forEach((sector, index) => {\n      const applied = index === state.active ? flow : 0;\n      if (sector.valid) {\n        const moisture = sector.moisture - sector.drying / DAY + CONFIG.gain * applied / CONFIG.flow;\n        sector.moisture = Math.min(100, Math.max(0, moisture));\n      }\n      sector.liters += applied;\n      state.total += applied;\n    });\n  }\n\n  function dispatch(state, topic, value) {\n    switch (topic) {\n      case 'tick':\n        step(state);\n        break;\n      case 'start':\n        if (state.running || !canRearm(state)) break;\n        if (state.lock) log(state, 'Protección rearmada', 'Condición hidráulica normal.', 'success');\n        state.lock = null;\n        state.running = true;\n        log(state, 'Riego iniciado', MODES[state.mode] + '.', 'water');\n        openNextTurn(state);\n        break;\n      case 'next':\n        openNextTurn(state);\n        break;\n      case 'stop':\n        if (!state.running) break;\n        closeValve(state, 'Parada manual.');\n        state.running = false;\n        log(state, 'Riego detenido', 'El reloj de la simulación está en pausa.');\n        break;\n      case 'source-lost':\n        closeValve(state, 'Se perdió la telemetría del ESP32.', 'alarm');\n        state.running = false;\n        log(state, 'ESP32 desconectado', 'Válvulas cerradas. Reanuda el riego cuando vuelva la telemetría.', 'alarm');\n        break;\n      case 'source':\n        closeValve(state, 'Cambio de fuente de control.');\n        state.running = false;\n        log(state, 'Fuente de control actualizada', value);\n        break;\n      case 'reset':\n        return create();\n      case 'mode':\n        if (!Object.hasOwn(MODES, value) || state.mode === value) break;\n        closeValve(state, 'Cambio de estrategia.');\n        state.running = false;\n        state.mode = value;\n        log(state, 'Estrategia actualizada', MODES[value] + '.');\n        break;\n      case 'fault':\n        if (!Object.hasOwn(FAULTS, value) || state.fault === value) break;\n        state.fault = value;\n        state.abnormalMinutes = 0;\n        if (state.record) saveSample(state);\n        log(state, 'Escenario actualizado', FAULTS[value] + '.');\n        break;\n      case 'online':\n        if (typeof value !== 'boolean' || state.online === value) break;\n        state.online = value;\n        if (!value) {\n          log(state, 'Conexión interrumpida', 'El control local sigue disponible. Los eventos quedan en cola.', 'warning');\n          break;\n        }\n        state.lastSync = { count: state.pending.length, minute: state.minute };\n        state.confirmed += state.pending.length;\n        state.pending = [];\n        log(state, 'Conexión restablecida', `Eventos recuperados: ${state.lastSync.count}.`, 'success');\n        break;\n    }\n    return state;\n  }\n\n  function snapshot(state) {\n    const pending = state.pending.map(({ id }) => id);\n    const pendingIds = new Set(pending);\n    return {\n      mode: state.mode, running: state.running, fault: state.fault, active: state.active,\n      online: state.online, lock: state.lock, pending: pending.length, confirmed: state.confirmed,\n      total: state.total, lastSync: state.lastSync,\n      day: Math.floor(state.minute / DAY) + 1, time: clock(state.minute), ...readings(state),\n      supply: upstream(state), lastSample: state.lastSample, measured: state.measured, canRearm: canRearm(state),\n      nextMinutes: state.active === null && !state.lock ? waitMinutes(state) : null,\n      sectors: state.sectors.map((sector, index) => ({\n        id: sector.id, area: sector.area, moisture: Number(sector.moisture.toFixed(2)),\n        open: index === state.active, valid: sector.valid, below: sector.moisture < CONFIG.lower,\n        above: sector.moisture > CONFIG.upper, liters: sector.liters\n      })),\n      events: state.events.slice(0, 20).map((event) => ({\n        ...event, time: clock(event.minute), day: Math.floor(event.minute / DAY) + 1,\n        pending: pendingIds.has(event.id)\n      }))\n    };\n  }\n\n  function experiment(input = null) {\n    if (input && (!Array.isArray(input.soil) || input.soil.length !== SECTORS.length\n      || input.soil.some((value) => !Number.isFinite(value) || value < 0 || value > 100)\n      || !Number.isFinite(input.flow) || input.flow < 0 || input.flow > CONFIG.flow\n      || !Number.isFinite(input.pressure) || input.pressure < 0 || input.pressure > CONFIG.pressure)) {\n      throw new RangeError('E4 requiere cuatro humedades e hidráulica válidas.');\n    }\n    const area = SECTORS.reduce((sum, sector) => sum + sector.area, 0);\n    const minutes = CONFIG.days * DAY;\n    return ['auto', 'fixed'].map((mode) => {\n      const state = create(mode, 0, false);\n      if (input) {\n        state.sectors.forEach((sector, index) => { sector.moisture = input.soil[index]; });\n        state.supply = { flow: input.flow, pressure: input.pressure };\n      }\n      state.running = true;\n      const inBand = SECTORS.map(() => 0);\n      const daily = [];\n      let dailyBaseline = 0;\n      let dailyBand = 0;\n      for (let minute = 1; minute <= minutes; minute++) {\n        step(state);\n        state.sectors.forEach(({ moisture }, index) => {\n          if (moisture >= CONFIG.lower && moisture <= CONFIG.upper) {\n            inBand[index]++;\n            dailyBand++;\n          }\n        });\n        if (minute % DAY === 0) {\n          daily.push({\n            day: minute / DAY,\n            liters: state.total - dailyBaseline,\n            intensity: (state.total - dailyBaseline) / area,\n            band: dailyBand * 100 / (DAY * SECTORS.length)\n          });\n          dailyBaseline = state.total;\n          dailyBand = 0;\n        }\n      }\n      return {\n        mode, label: MODES[mode], liters: state.total, intensity: state.total / (area * CONFIG.days),\n        band: inBand.reduce((sum, count) => sum + count, 0) * 100 / (minutes * SECTORS.length),\n        daily,\n        sectors: state.sectors.map((sector, index) => ({\n          id: sector.id, liters: sector.liters, bandMinutes: inBand[index], band: inBand[index] * 100 / minutes\n        }))\n      };\n    });\n  }\n\n  function csv(results = experiment(), input = null) {\n    const rows = [['estrategia', 'periodo', 'litros', 'litros_m2_dia', 'tiempo_en_banda_pct']];\n    for (const result of results) {\n      rows.push([result.label, '7 días', result.liters, result.intensity.toFixed(4), result.band.toFixed(4)]);\n      for (const day of result.daily) {\n        rows.push([result.label, `Día ${day.day}`, day.liters, day.intensity.toFixed(4), day.band.toFixed(4)]);\n      }\n    }\n    if (input) {\n      rows[0].push('origen', 'captura_utc', 'secuencia_wokwi', 's1_inicial_pct', 's2_inicial_pct', 's3_inicial_pct',\n        's4_inicial_pct', 'caudal_disponible_l_min', 'presion_disponible_bar');\n      for (const row of rows.slice(1)) row.push(input.source, input.captured, input.seq ?? '', ...input.soil, input.flow, input.pressure);\n    }\n    return rows.map((row) => row.join(',')).join('\\r\\n') + '\\r\\n';\n  }\n\n  return { CONFIG, MODES, FAULTS, create, dispatch, snapshot, experiment, csv, setSupply, canRearm };\n})();\n\nif (typeof module !== 'undefined' && module.exports) module.exports = RiegoGuard;\n</script>\n  <script>'use strict';\n\nconst Telemetria = (() => {\n  const AREAS = Object.freeze({\n    'tacna-centro': { name: 'Tacna Centro', source: 'wokwi', ttl: 4200 },\n    'tacna-norte': { name: 'Tacna Norte', source: 'packet-tracer', ttl: 8500 },\n    'tacna-sur': { name: 'Tacna Sur', source: 'packet-tracer', ttl: 8500 }\n  });\n  const between = (value, min, max) => Number.isFinite(value) && value >= min && value <= max;\n  const present = (value, min, max) => value === null || between(value, min, max);\n\n  function accept(store, data, source, now, config) {\n    const reject = (error, status = 400) => ({ error, status });\n    if (!data || data.v !== 2) return reject('Se requiere telemetría v2 con humedad S1–S4.');\n    const area = Object.hasOwn(AREAS, data.farm) ? AREAS[data.farm] : null;\n    if (!area || area.source !== source || typeof data.boot !== 'string' || !/^[a-zA-Z0-9_-]{1,40}$/.test(data.boot)\n      || !Number.isSafeInteger(data.seq) || !between(data.seq, 1, 4294967295)\n      || !Number.isInteger(data.valve) || !between(data.valve, 0, 4)\n      || !between(data.flow, 0, config.flow) || !between(data.pressure, 0, config.pressure)\n      || !Array.isArray(data.soil) || data.soil.length !== 4 || !data.soil.every((value) => present(value, 0, 100))\n      || !data.air || !present(data.air.temperature, -40, 80) || !present(data.air.humidity, 0, 100)) {\n      return reject('Campos o parcela inválidos.');\n    }\n    if (source === 'wokwi' && data.sampledAt === 0) return { sync: true };\n    if (!Number.isSafeInteger(data.sampledAt) || data.sampledAt <= 0\n      || data.sampledAt > now + 1500 || now - data.sampledAt >= area.ttl) {\n      return reject('Muestra vencida o reloj fuera de rango.', 409);\n    }\n    const entry = store[data.farm] || { packets: 0, samples: 0, inBand: 0, liters: 0, last: null, retired: [] };\n    const previous = entry.last;\n    if (previous && (entry.retired.includes(data.boot) || data.sampledAt < previous.sampledAt\n      || (data.boot === previous.boot && data.seq <= previous.seq)\n      || (data.boot !== previous.boot && data.sampledAt <= previous.sampledAt))) {\n      return reject('Muestra repetida o fuera de orden.', 409);\n    }\n    if (previous?.boot !== undefined && previous.boot !== data.boot) {\n      entry.retired = [...entry.retired, previous.boot].slice(-16);\n    }\n    const elapsed = previous ? data.sampledAt - previous.sampledAt : 0;\n    if (previous?.boot === data.boot && data.valve > 0 && data.valve === previous.valve && elapsed > 0 && elapsed < area.ttl) {\n      entry.liters += (previous.flow + data.flow) * elapsed / 120000;\n    }\n    for (const moisture of data.soil) {\n      if (moisture === null) continue;\n      entry.samples++;\n      if (moisture >= config.lower && moisture <= config.upper) entry.inBand++;\n    }\n    entry.packets++;\n    const packet = {\n      boot: data.boot, seq: data.seq, valve: data.valve, flow: data.flow, pressure: data.pressure,\n      soil: data.soil, air: { temperature: data.air.temperature, humidity: data.air.humidity },\n      sampledAt: data.sampledAt, at: now\n    };\n    entry.last = packet;\n    store[data.farm] = entry;\n    return { packet, entry };\n  }\n\n  function available(packet, area, now) {\n    return Boolean(packet && now - packet.sampledAt < AREAS[area].ttl && now - packet.at < AREAS[area].ttl);\n  }\n\n  function summary(store, now) {\n    return Object.entries(AREAS).map(([id, area]) => {\n      const item = store[id];\n      const last = item?.last || null;\n      const soil = last?.soil.filter((value) => value !== null) || [];\n      return {\n        id, name: area.name, source: area.source, last, online: available(last, id, now),\n        age: last ? Math.max(0, now - last.sampledAt) : null,\n        packets: item?.packets ?? 0, samples: item?.samples ?? 0, liters: item?.liters ?? 0,\n        band: item?.samples ? 100 * item.inBand / item.samples : null,\n        meanSoil: soil.length ? soil.reduce((sum, value) => sum + value, 0) / soil.length : null\n      };\n    });\n  }\n\n  return { accept, available, summary };\n})();\n\nif (typeof module !== 'undefined' && module.exports) module.exports = Telemetria;\n</script>\n  <script>'use strict';\n\nconst Parcela3D = (() => {\n  const PLOTS = [\n    { x: -5.1, z: -4.25 }, { x: 5.1, z: -4.25 },\n    { x: -5.1, z: 4.25 }, { x: 5.1, z: 4.25 }\n  ];\n  const START = { yaw: 0.48, pitch: 0.70, distance: 34 };\n  const BED_WIDTH = 8.7;\n  const BED_LENGTH = 6.8;\n  const GREEN = ['#437552', '#5e9360', '#6ba46d', '#88b879', '#aec589'];\n  const clamp = (n, min, max) => Math.min(max, Math.max(min, n));\n  const dot = (p, v) => p[0] * v[0] + p[1] * v[1] + p[2] * v[2];\n\n  function surface(list, points, fill) {\n    const middle = [0, 1, 2].map((axis) => points.reduce((sum, point) => sum + point[axis], 0) / points.length);\n    list.push({ points, fill, middle });\n  }\n\n  function box(list, x, y, z, width, height, depth, [top, front, side]) {\n    const a = x - width / 2;\n    const b = x + width / 2;\n    const c = z - depth / 2;\n    const d = z + depth / 2;\n    const u = y + height;\n    surface(list, [[a, u, c], [b, u, c], [b, u, d], [a, u, d]], top);\n    surface(list, [[a, y, c], [b, y, c], [b, u, c], [a, u, c]], front);\n    surface(list, [[a, y, d], [b, y, d], [b, u, d], [a, u, d]], front);\n    surface(list, [[a, y, c], [a, y, d], [a, u, d], [a, u, c]], side);\n    surface(list, [[b, y, c], [b, y, d], [b, u, d], [b, u, c]], side);\n  }\n\n  function cylinder(list, x, y, z, radius, height, colors) {\n    const ring = Array.from({ length: 22 }, (_, i) => {\n      const angle = i * Math.PI / 11;\n      return [x + Math.cos(angle) * radius, y + height, z + Math.sin(angle) * radius];\n    });\n    ring.forEach((point, i) => {\n      const next = ring[(i + 1) % ring.length];\n      const shade = Math.round((1 + Math.sin(i * Math.PI / 11 + 0.45)) * (colors.length - 2) / 2);\n      surface(list, [point, next, [next[0], y, next[2]], [point[0], y, point[2]]], colors[shade + 1]);\n    });\n    surface(list, ring, colors[0]);\n  }\n\n  function plant(list, x, z, height, twist) {\n    const origin = [x, 0.30, z];\n    for (let i = 0; i < 4; i++) {\n      const angle = twist + i * Math.PI / 2;\n      const dx = Math.cos(angle);\n      const dz = Math.sin(angle);\n      const middle = [x + dx * 0.19, 0.3 + height * 0.63, z + dz * 0.19];\n      const tip = [x + dx * 0.34, 0.3 + height * (0.76 + i * 0.07), z + dz * 0.34];\n      surface(list, [origin, [middle[0] - dz * .13, middle[1] - .06, middle[2] + dx * .13], tip, middle], GREEN[i]);\n      surface(list, [origin, middle, tip, [middle[0] + dz * .1, middle[1] - .07, middle[2] - dx * .1]], GREEN[i + 1]);\n    }\n  }\n\n  const crops = [];\n  PLOTS.forEach(({ x, z }, plot) => {\n    for (let row = 0; row < 5; row++) {\n      for (let column = 0; column < 7; column++) {\n        const seed = (plot * 37 + row * 11 + column * 17) % 19;\n        plant(crops, x + (column - 3) * 1.06, z + (row - 2) * 1.06, .42 + seed * .018, seed * .53);\n      }\n    }\n  });\n  const fixtures = [];\n  box(fixtures, -10.95, 0.04, 0, 2.05, .22, 2.8, ['#aab4a7', '#868e80', '#778579']);\n  cylinder(fixtures, -11.05, .26, .14, .79, 1.46, ['#81b9c5', '#477d8d', '#5c99a8', '#71afbc', '#86b9c3']);\n  cylinder(fixtures, -11.05, 1.72, .14, .86, .12, ['#b7d2d2', '#6797a0', '#83adb3', '#9abec2']);\n  cylinder(fixtures, -11.05, 1.84, .14, .26, .15, ['#4c7777', '#577b7d', '#789c9b']);\n  box(fixtures, -10.94, .26, -1.0, .65, .46, .61, ['#4a6b62', '#305649', '#395750']);\n\n  const pipes = (objects, active) => {\n    const idle = ['#638480', '#3e5b57', '#536b62'];\n    const wet = ['#58c6db', '#2386a7', '#328e9e'];\n    const feed = PLOTS[active]?.x ?? -10.55;\n    const joints = [-10.55, -5.1, 5.1, 5.55];\n    for (let i = 1; i < joints.length; i++) {\n      const start = joints[i - 1];\n      const end = joints[i];\n      box(objects, (start + end) / 2, .17, 0, end - start, .17, .19, end <= feed ? wet : idle);\n    }\n    PLOTS.forEach(({ x, z }, i) => {\n      const open = active === i;\n      box(objects, x, .22, z / 2, .17, .15, Math.abs(z), open ? wet : idle);\n      cylinder(objects, x, .36, Math.sign(z) * .79, .25, .15, open\n        ? ['#4dcce7', '#268aa6', '#32a6c0']\n        : ['#92a49a', '#496457', '#64766f']);\n      for (const offset of [-1.58, 0, 1.58]) {\n        box(objects, x, .32, z + offset, .15, .47, .15, open ? wet : idle);\n        box(objects, x, .79, z + offset, .28, .12, .28, open ? wet : idle);\n      }\n    });\n  };\n\n  function create(canvas, buttons) {\n    const ctx = canvas.getContext('2d');\n    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');\n    let camera = { ...START };\n    let current;\n    let visible = false;\n    let queued = false;\n    let drag;\n    let lastSignature;\n\n    function queue() {\n      if (!queued && visible) {\n        queued = true;\n        requestAnimationFrame(draw);\n      }\n    }\n\n    function draw(time) {\n      queued = false;\n      if (!visible || !current || !ctx || canvas.clientWidth === 0) return;\n      const width = canvas.clientWidth;\n      const height = canvas.clientHeight;\n      const dpr = Math.min(window.devicePixelRatio || 1, 2);\n      if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) {\n        canvas.width = Math.round(width * dpr);\n        canvas.height = Math.round(height * dpr);\n      }\n      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);\n      const { yaw, pitch, distance } = camera;\n      const right = [Math.cos(yaw), 0, -Math.sin(yaw)];\n      const up = [-Math.sin(yaw) * Math.sin(pitch), Math.cos(pitch), -Math.cos(yaw) * Math.sin(pitch)];\n      const forward = [Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)];\n      const focal = Math.min(width * 1.14, height * 1.52);\n      const project = (point) => {\n        const scale = focal / (distance - dot(point, forward));\n        return [width * .5 + dot(point, right) * scale, height * .55 - dot(point, up) * scale];\n      };\n      function polygon(points, fill) {\n        ctx.beginPath();\n        for (const [i, point] of points.entries()) {\n          if (i === 0) ctx.moveTo(...point);\n          else ctx.lineTo(...point);\n        }\n        ctx.closePath();\n        ctx.fillStyle = fill;\n        ctx.fill();\n      }\n      function paint(faces) {\n        faces.sort((a, b) => dot(a.middle, forward) - dot(b.middle, forward));\n        for (const face of faces) polygon(face.points.map(project), face.fill);\n      }\n\n      const sky = ctx.createLinearGradient(0, 0, 0, height);\n      sky.addColorStop(0, '#e8f2ee');\n      sky.addColorStop(.52, '#edf0e6');\n      sky.addColorStop(1, '#e3dfcd');\n      ctx.fillStyle = sky;\n      ctx.fillRect(0, 0, width, height);\n      polygon([[0, height * .31], [width * .17, height * .22], [width * .28, height * .25], [width * .48, height * .15],\n        [width * .68, height * .25], [width * .84, height * .21], [width, height * .27], [width, height * .46], [0, height * .46]], '#d2d9cb');\n      polygon([[0, height * .34], [width * .21, height * .30], [width * .35, height * .37], [width * .61, height * .31],\n        [width * .79, height * .34], [width, height * .29], [width, height * .54], [0, height * .49]], '#dedfce');\n\n      const shadow = [[-13.4, -.55, -9.6], [13.5, -.55, -9.6], [13.5, -.55, 10.3], [-13.4, -.55, 10.3]];\n      polygon(shadow.map(project), '#cbcab67d');\n      const ground = [];\n      box(ground, 0, -.64, 0, 25.5, .65, 18.8, ['#e6d9b9', '#bcab8b', '#caba9a']);\n      paint(ground);\n      const beds = [];\n      const furrows = [];\n      PLOTS.forEach(({ x, z }, i) => {\n        const open = i === current.active;\n        box(beds, x, .02, z, BED_WIDTH + .28, .11, BED_LENGTH + .22, open\n          ? ['#4d9bb2', '#517782', '#4e8498']\n          : ['#ad9877', '#a39173', '#c6b08d']);\n        box(beds, x, .12, z, BED_WIDTH, .18, BED_LENGTH, open\n          ? ['#866f56', '#6a5849', '#77644f']\n          : ['#a48360', '#8d7051', '#93775a']);\n        for (let row = 0; row < 5; row++) {\n          box(furrows, x, .301, z + (row - 2) * 1.06, 7.8, .018, .31,\n            open ? ['#625c4b', '#625c4b', '#625c4b'] : ['#8d7657', '#8d7657', '#8d7657']);\n        }\n      });\n      paint(beds);\n      paint(furrows);\n      const scene = [...crops, ...fixtures];\n      pipes(scene, current.flow > 0 ? current.active : null);\n      paint(scene);\n\n      if (current.active !== null && current.flow > 0) {\n        const { x, z } = PLOTS[current.active];\n        const length = x + 10.55;\n        const elapsed = reduceMotion.matches ? 400 : time;\n        for (let i = 0; i < 13; i++) {\n          const position = ((elapsed * .0027 + i * .88) % (length + Math.abs(z)));\n          const world = position < length ? [-10.55 + position, .41, 0] : [x, .42, Math.sign(z) * (position - length)];\n          const [sx, sy] = project(world);\n          ctx.fillStyle = '#d2faff';\n          ctx.beginPath();\n          ctx.arc(sx, sy, width < 500 ? 1.4 : 2.2, 0, Math.PI * 2);\n          ctx.fill();\n        }\n        if (current.pressure > 0) {\n          const pressure = Math.max(.25, current.pressure / 1.8);\n          const rate = Math.max(.25, current.flow / 12);\n          const seconds = elapsed / 1000;\n          const reach = 3.25 * pressure;\n          for (const [sprinkler, offset] of [-1.58, 0, 1.58].entries()) {\n            for (const side of [-1, 1]) {\n              const bend = Math.sin(seconds * 2.8 + sprinkler * 1.3) * .55;\n              for (const fan of [-.34, .34]) {\n                const world = (phase) => [\n                  x + side * reach * phase,\n                  .89 + pressure * 2.36 * phase * (1 - phase) * 2.6 - .58 * phase * phase,\n                  z + offset + (bend + fan) * phase\n                ];\n                ctx.beginPath();\n                for (let segment = 0; segment <= 12; segment++) {\n                  const point = project(world(segment / 12));\n                  if (segment === 0) ctx.moveTo(...point);\n                  else ctx.lineTo(...point);\n                }\n                ctx.lineCap = 'round';\n                ctx.lineWidth = width < 500 ? 2.5 : 3.5;\n                ctx.strokeStyle = 'rgba(3, 89, 133, 0.43)';\n                ctx.stroke();\n                ctx.lineWidth = width < 500 ? 1.3 : 2.15;\n                ctx.strokeStyle = 'rgba(86, 225, 251, 0.92)';\n                ctx.stroke();\n                for (let i = 0; i < 6; i++) {\n                  const phase = (seconds * (.95 + rate * .7) + i / 6 + sprinkler * .19) % 1;\n                  const [sx, sy] = project(world(phase));\n                  ctx.beginPath();\n                  ctx.fillStyle = i % 2 ? '#9cf1ff' : '#f0fcff';\n                  ctx.arc(sx, sy, width < 500 ? 1.1 : 1.65, 0, Math.PI * 2);\n                  ctx.fill();\n                }\n              }\n            }\n          }\n        }\n      }\n\n      const labels = PLOTS.map(({ x, z }, i) => ({\n        index: i, point: [x, 1.63, z + .4]\n      })).sort((a, b) => dot(a.point, forward) - dot(b.point, forward));\n      for (const { index, point } of labels) {\n        const sector = current.sectors[index];\n        const [x, y] = project(point);\n        const small = width < 500;\n        const text = sector.id + '  ' + (sector.valid\n          ? sector.moisture.toLocaleString('es-ES', { maximumFractionDigits: current.measured ? 2 : 1 }) + ' %' : '—');\n        ctx.font = `650 ${small ? 9 : 12}px \"DM Sans\", \"Segoe UI\", sans-serif`;\n        const w = ctx.measureText(text).width + (small ? 10 : 15);\n        ctx.beginPath();\n        ctx.roundRect(x - w / 2, y - 12, w, small ? 19 : 24, 6);\n        ctx.fillStyle = sector.open ? '#135f76' : '#edf1e8';\n        ctx.fill();\n        ctx.strokeStyle = sector.open ? '#aee9f2' : '#879984';\n        ctx.stroke();\n        ctx.textAlign = 'center';\n        ctx.textBaseline = 'middle';\n        ctx.fillStyle = sector.open ? '#e7fcff' : '#304b3d';\n        ctx.fillText(text, x, small ? y - 2 : y);\n      }\n      if (current.active !== null && current.flow > 0 && !reduceMotion.matches) queue();\n    }\n\n    function orbit(x, y) {\n      camera.yaw -= x * .008;\n      camera.pitch = clamp(camera.pitch + y * .009, .28, 1.35);\n      queue();\n    }\n\n    function zoom(delta) {\n      camera.distance = clamp(camera.distance + delta, 21, 56);\n      queue();\n    }\n\n    function reset() {\n      camera = { ...START };\n      queue();\n    }\n\n    canvas.addEventListener('pointerdown', (event) => {\n      if (drag || event.button !== 0) return;\n      drag = { id: event.pointerId, x: event.clientX, y: event.clientY };\n      canvas.setPointerCapture(event.pointerId);\n    });\n    canvas.addEventListener('pointermove', (event) => {\n      if (drag?.id !== event.pointerId) return;\n      orbit(event.clientX - drag.x, event.clientY - drag.y);\n      drag.x = event.clientX;\n      drag.y = event.clientY;\n    });\n    canvas.addEventListener('lostpointercapture', (event) => {\n      if (drag?.id === event.pointerId) drag = null;\n    });\n    canvas.addEventListener('wheel', (event) => {\n      event.preventDefault();\n      zoom(clamp(event.deltaY * .029, -5, 5));\n    }, { passive: false });\n    canvas.addEventListener('keydown', (event) => {\n      const keys = {\n        ArrowLeft: () => orbit(-14, 0), ArrowRight: () => orbit(14, 0),\n        ArrowUp: () => orbit(0, -12), ArrowDown: () => orbit(0, 12),\n        '+': () => zoom(-3), '-': () => zoom(3), Home: reset\n      };\n      if (!Object.hasOwn(keys, event.key)) return;\n      event.preventDefault();\n      keys[event.key]();\n    });\n    buttons.in.addEventListener('click', () => zoom(-3));\n    buttons.out.addEventListener('click', () => zoom(3));\n    buttons.reset.addEventListener('click', reset);\n    new ResizeObserver(queue).observe(canvas);\n    reduceMotion.addEventListener('change', queue);\n    return {\n      visibility(value) { visible = value; queue(); },\n      setState(data) {\n        current = data;\n        const signature = [data.active, data.flow, data.pressure,\n          ...data.sectors.map((sector) => sector.valid ? sector.moisture.toFixed(data.measured ? 2 : 1) : '—')].join('/');\n        if (signature !== lastSignature) {\n          lastSignature = signature;\n          queue();\n        }\n      }\n    };\n  }\n\n  return { create };\n})();\n</script>\n  <script>'use strict';\n\n(() => {\n  const find = (id) => document.getElementById(id);\n  const format = (value, digits = 0) => value.toLocaleString('es-ES', {\n    minimumFractionDigits: digits, maximumFractionDigits: digits\n  });\n  const icon = (name) => `<svg aria-hidden=\"true\"><use href=\"#i-${name}\"/></svg>`;\n  const set = (id, value) => {\n    const element = find(id);\n    if (element.textContent !== value) element.textContent = value;\n  };\n  const serverMode = document.documentElement.dataset.runtime === 'node-red';\n  const eventIcons = { info: 'info', water: 'water', warning: 'wifi', alarm: 'alert', success: 'check' };\n  let state = RiegoGuard.create();\n  let current;\n  let eventSignature = '';\n  let results;\n  let experimentInput;\n  let activeView = 'simulation';\n  let scene;\n  let lastGood = -Infinity;\n  let polling = false;\n  let busy = false;\n  const viewIds = ['simulation', 'parcel3d', 'integration', 'central', 'experiment'];\n  const actionLabels = {\n    start: 'Iniciar riego', next: 'Siguiente turno', stop: 'Detener riego', reset: 'Reiniciar',\n    mode: 'Cambiar estrategia', fault: 'Cambiar condición', online: 'Cambiar enlace de eventos', source: 'Cambiar fuente'\n  };\n\n  const sectors = RiegoGuard.snapshot(state).sectors.map(({ id, area }) => {\n    const element = document.createElement('article');\n    element.className = 'sector';\n    element.dataset.sector = id;\n    element.innerHTML = `\n      <div class=\"sector-body\">\n        <div class=\"sector-head\"><span class=\"sector-id\">${icon('leaf')} ${id}</span><span class=\"sector-area\">${area} m²</span></div>\n        <div class=\"sector-reading\"><strong></strong><span>Humedad</span></div>\n        <div class=\"moisture-meter\" role=\"meter\" aria-label=\"Humedad de ${id}\" aria-valuemin=\"0\" aria-valuemax=\"100\"><span class=\"fill\"></span></div>\n      </div>\n      <div class=\"valve\"><span>Válvula</span><span class=\"valve-state\"><i></i><b></b></span></div>`;\n    find('parcel').append(element);\n    return {\n      element, value: element.querySelector('.sector-reading strong'), meter: element.querySelector('.moisture-meter'),\n      fill: element.querySelector('.fill'), valve: element.querySelector('.valve-state b')\n    };\n  });\n  const sceneSectors = sectors.map(({ element }) => {\n    const item = document.createElement('li');\n    item.innerHTML = '<b></b><span></span><span class=\"valve-text\"></span>';\n    item.querySelector('b').textContent = element.dataset.sector;\n    find('scene-sectors').append(item);\n    return { item, humidity: item.children[1], valve: item.children[2] };\n  });\n\n  const live = () => !serverMode || performance.now() - lastGood < 3500;\n  const waitingForEsp = (data) => data.transport?.source === 'wokwi' && !data.transport.connected;\n\n  function applySnapshot(next) {\n    if (!next?.transport) throw new Error('La respuesta de Node-RED no incluye el estado del flujo.');\n    lastGood = performance.now();\n    if (next.transport.boot !== current?.transport?.boot || next.transport.frame >= current.transport.frame) render(next);\n  }\n\n  function reportError(message = '') {\n    set('command-feedback', message);\n    find('command-feedback').hidden = !message;\n  }\n\n  async function refresh() {\n    if (polling || busy) return;\n    polling = true;\n    try {\n      const response = await fetch('/riegoguard/estado', { cache: 'no-store', signal: AbortSignal.timeout(1600) });\n      if (!response.ok) throw new Error();\n      const payload = await response.json();\n      if (payload.version !== 5) throw new Error();\n      applySnapshot(payload.state);\n    } catch {\n      render(current);\n    } finally {\n      polling = false;\n    }\n  }\n\n  async function send(topic, value) {\n    if (!serverMode) {\n      state = RiegoGuard.dispatch(state, topic, value);\n      render(RiegoGuard.snapshot(state));\n      return;\n    }\n    if (busy || !live()) return;\n    busy = true;\n    reportError();\n    renderControls(current);\n    try {\n      const response = await fetch('/riegoguard/orden', {\n        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ topic, value }),\n        cache: 'no-store', signal: AbortSignal.timeout(2500)\n      });\n      const payload = await response.json();\n      if (payload.state) applySnapshot(payload.state);\n      if (!response.ok || !payload.ok) reportError(payload.error || 'Node-RED rechazó la orden.');\n    } catch {\n      reportError('No llegó confirmación de Node-RED. Comprueba que el iniciador siga abierto.');\n    } finally {\n      busy = false;\n      render(current);\n    }\n  }\n\n  function toggleTurn() {\n    const readyForNext = current.active === null && !(current.measured && current.mode === 'auto');\n    send(current.running ? readyForNext ? 'next' : 'stop' : 'start');\n  }\n\n  function showView(view) {\n    activeView = view;\n    for (const id of viewIds) find(id).hidden = id !== view;\n    document.querySelectorAll('[data-view]').forEach((item) => {\n      const active = item.dataset.view === view;\n      item.classList.toggle('current', active);\n      if (active) item.setAttribute('aria-current', 'page');\n      else item.removeAttribute('aria-current');\n    });\n    if (view === 'parcel3d' && !scene) {\n      scene = Parcela3D.create(find('scene'), {\n        in: find('zoom-in'), out: find('zoom-out'), reset: find('camera-reset')\n      });\n    }\n    scene?.visibility(view === 'parcel3d');\n    render(current);\n    window.scrollTo(0, 0);\n  }\n\n  function registerControls() {\n    find('mode').addEventListener('change', (event) => send('mode', event.target.value));\n    find('fault').addEventListener('change', (event) => send('fault', event.target.value));\n    find('scene-fault').addEventListener('change', (event) => send('fault', event.target.value));\n    find('offline').addEventListener('change', (event) => send('online', !event.target.checked));\n    find('reset').addEventListener('click', () => send('reset'));\n    find('source').addEventListener('change', (event) => send('source', event.target.value));\n    find('start').addEventListener('click', toggleTurn);\n    find('scene-start').addEventListener('click', toggleTurn);\n    find('pause').addEventListener('click', () => send('stop'));\n    find('scene-pause').addEventListener('click', () => send('stop'));\n    find('scene-controls').addEventListener('click', () => showView('simulation'));\n    document.querySelectorAll('[data-view]').forEach((button) =>\n      button.addEventListener('click', () => showView(button.dataset.view))\n    );\n    find('central-download').addEventListener('click', () => {\n      const header = 'parcela,origen,estado,muestras_suelo,porcentaje_en_banda,litros_estimados\\n';\n      const rows = (current.central || []).map((area) => [\n        area.name, area.source, area.online ? 'vigente' : 'sin datos vigentes',\n        area.samples, area.band?.toFixed(2) ?? '', area.liters.toFixed(3)\n      ].join(','));\n      download('central-riego.csv', header + rows.join('\\n') + '\\n');\n    });\n    find('download').addEventListener('click', () => {\n      if (results) download('resultados-E4.csv', RiegoGuard.csv(results, experimentInput));\n    });\n    find('e4-run').addEventListener('click', captureExperiment);\n  }\n\n  function download(name, content) {\n    const link = document.createElement('a');\n    const url = URL.createObjectURL(new Blob(['\\uFEFF', content], { type: 'text/csv;charset=utf-8' }));\n    link.href = url;\n    link.download = name;\n    link.click();\n    setTimeout(() => URL.revokeObjectURL(url), 1000);\n  }\n\n  function renderMetrics(data) {\n    find('connection').className = 'pill ' + (data.online ? 'online' : 'offline');\n    set('connection-label', data.online ? 'En línea' : 'Sin conexión');\n    set('clock', `Día ${data.day} · ${data.time}`);\n    set('flow', live() ? format(data.flow, 1) : '—');\n    set('pressure', live() ? format(data.pressure, 1) : '—');\n    for (const [id, unit, low] of [['flow', 'L/min', RiegoGuard.CONFIG.minFlow], ['pressure', 'bar', RiegoGuard.CONFIG.minPressure]]) {\n      const tripped = data.lock?.[id] < low;\n      find(id + '-caption').classList.toggle('sample-alarm', tripped);\n      set(id + '-caption', tripped\n        ? 'Al cierre: ' + format(data.lock[id], 1) + ' ' + unit\n        : waitingForEsp(data) || !live() ? 'Sin lectura disponible' : 'Disponible: ' + format(data.supply[id], 1) + ' ' + unit);\n    }\n    set('active', live() ? data.active === null ? '0' : '1' : '—');\n    set('total', format(data.total));\n    data.sectors.forEach((sector, index) => {\n      const view = sectors[index];\n      view.element.classList.toggle('is-open', live() && sector.open);\n      view.element.classList.toggle('is-dry', sector.below && !sector.open);\n      view.element.classList.toggle('is-wet', sector.above);\n      const valid = live() && sector.valid;\n      const moisture = valid ? format(sector.moisture, data.measured ? 2 : 1) + ' %' : '—';\n      view.value.textContent = moisture;\n      view.meter.setAttribute('aria-valuenow', valid ? sector.moisture : 0);\n      view.meter.setAttribute('aria-valuetext', valid ? moisture : 'Sin lectura válida');\n      view.fill.style.width = (valid ? sector.moisture : 0) + '%';\n      view.valve.textContent = valid ? sector.open ? 'Abierta' : 'Cerrada' : 'Sin lectura';\n    });\n  }\n\n  function renderControls(data) {\n    find('mode').value = data.mode;\n    find('fault').value = data.fault;\n    find('scene-fault').value = data.fault;\n    find('offline').checked = !data.online;\n    for (const id of ['mode', 'fault', 'scene-fault', 'offline', 'reset', 'pause', 'scene-pause']) find(id).disabled = busy || !live();\n    const waiting = waitingForEsp(data);\n    const irrigating = data.active !== null;\n    const waitingSoil = data.running && !irrigating && data.measured && data.mode === 'auto';\n    const nextTurn = data.running && !irrigating && !waitingSoil;\n    find('pause').hidden = find('scene-pause').hidden = !nextTurn;\n    for (const id of ['start', 'scene-start']) {\n      find(id).disabled = Boolean(busy || !live() || !data.canRearm || waiting);\n      find(id + '-icon').setAttribute('href', irrigating || waitingSoil ? '#i-stop' : '#i-play');\n      set(id + '-label', irrigating || waitingSoil ? 'Detener riego' : nextTurn ? 'Siguiente turno' : data.lock ? 'Rearmar e iniciar' : 'Iniciar riego');\n    }\n\n    let note = { title: 'Sistema en espera', detail: 'Inicia el riego para activar el controlador.', icon: 'info' };\n    if (data.running) {\n      const detail = data.nextMinutes > 0\n        ? `Todas las válvulas están cerradas. Pulsa Siguiente turno para avanzar ${data.nextMinutes} min virtuales.`\n        : 'El próximo sector está listo. Pulsa Siguiente turno para abrir su válvula.';\n      note = { title: 'Turno completado', detail, icon: 'activity' };\n    }\n    if (waitingSoil) note = { title: 'Esperando un sector seco', detail: 'El próximo turno se abre al recibir humedad de suelo válida de 35 % o menos.', icon: 'activity' };\n    if (data.active !== null) {\n      note = { title: `Regando sector ${data.sectors[data.active].id}`, detail: `${format(data.flow, 1)} L/min · ${format(data.pressure, 1)} bar con la válvula abierta.`, icon: 'water' };\n    }\n    if (irrigating && (data.flow < RiegoGuard.CONFIG.minFlow || data.pressure < RiegoGuard.CONFIG.minPressure)) {\n      note = { title: 'Verificando la conducción', detail: `Lectura fuera de rango · ${format(data.flow, 1)} L/min · ${format(data.pressure, 1)} bar.`, icon: 'alert', kind: 'warning' };\n    }\n    if (data.online && data.events[0]?.title === 'Conexión restablecida') {\n      note = { title: 'Conexión restablecida', detail: `Eventos recuperados: ${data.lastSync.count}.`, icon: 'check' };\n    }\n    if (!data.online) {\n      note = { title: 'Control local disponible', detail: 'Los eventos se guardan en cola hasta restablecer la conexión.', icon: 'wifi', kind: 'warning' };\n    }\n    if (data.lock) {\n      note = {\n        title: `Cierre de seguridad · ${data.lock.sector}`,\n        detail: data.lock.reason + (data.canRearm ? ' Pulsa Rearmar e iniciar.' : ' Restablece caudal y presión normales para rearmar.'),\n        icon: 'alert', kind: 'alarm'\n      };\n    }\n    if (waiting) {\n      note = { title: 'ESP32 desconectado', detail: 'En Enlace ESP32, elige Simulador interno para probar el riego mientras restableces Wokwi.', icon: 'wifi', kind: 'warning' };\n    }\n    if (!live()) {\n      note = { title: 'Esperando a Node-RED', detail: 'Los controles se habilitan al recibir una trama. Comprueba que el iniciador esté abierto.', icon: 'wifi', kind: 'warning' };\n    }\n    for (const [box, prefix] of [['status-note', 'note'], ['scene-status', 'scene-status']]) {\n      find(box).className = 'status-note ' + (note.kind || '');\n      find(prefix + '-icon').setAttribute('href', '#i-' + note.icon);\n      set(prefix + '-title', note.title);\n      set(prefix + '-detail', note.detail);\n    }\n  }\n\n  function renderScene(data) {\n    scene?.setState(live() ? data : {\n      ...data, active: null, flow: 0, pressure: 0, sectors: data.sectors.map((sector) => ({ ...sector, open: false }))\n    });\n    if (activeView !== 'parcel3d') return;\n    set('clock3d', 'Día ' + data.day + ' · ' + data.time);\n    set('scene-source', data.transport?.source === 'wokwi' ? 'Wokwi · suelo modelado e hidráulica' : 'Simulador interno');\n    set('scene-flow', live() ? format(data.flow, 1) : '—');\n    set('scene-pressure', live() ? format(data.pressure, 1) : '—');\n    const spraying = live() && data.active !== null && data.flow > 0 && data.pressure > 0;\n    find('scene-spray').hidden = !spraying;\n    if (spraying) set('scene-spray-label', data.sectors[data.active].id + ' · Aspersores activos');\n    const sample = data.lastSample;\n    find('scene-sample').classList.toggle('sample-alarm', Boolean(data.lock));\n    let sampleLabel = `Disponible · ${format(data.supply.flow, 1)} L/min · ${format(data.supply.pressure, 1)} bar`;\n    if (!live() || waitingForEsp(data)) sampleLabel = 'Sin lectura disponible.';\n    else if (data.active !== null) sampleLabel = 'Mínimos de protección · 7 L/min y 1,2 bar';\n    else if (sample) sampleLabel = `Última lectura ${sample.sector} · ${format(sample.flow, 1)} L/min · ${format(sample.pressure, 1)} bar`;\n    set('scene-sample', sampleLabel);\n    data.sectors.forEach((sector, index) => {\n      const view = sceneSectors[index];\n      view.item.classList.toggle('is-open', live() && sector.open);\n      const valid = live() && sector.valid;\n      view.humidity.textContent = valid ? format(sector.moisture, data.measured ? 2 : 1) + ' %' : '—';\n      view.valve.textContent = valid ? sector.open ? 'Abierta' : 'Cerrada' : 'Sin lectura';\n    });\n  }\n\n  function renderTransport(data) {\n    const transport = data.transport;\n    const packet = live() && transport?.connected ? transport.packet : null;\n    const active = serverMode && live() && Boolean(transport?.nodeRed);\n    set('runtime-title', active ? 'Flujo activo · Node-RED' : serverMode ? 'Esperando a Node-RED' : 'Simulador interno');\n    set('runtime-caption', active ? 'Trama ' + format(transport.frame) : serverMode ? 'Esperando estado' : 'Modo autónomo');\n    find('runtime-pill').className = 'pill ' + (active ? 'online' : serverMode ? 'offline' : 'neutral');\n    set('runtime-pill-label', active ? 'Node-RED activo' : serverMode ? 'Sin respuesta del flujo' : 'Simulador interno');\n    find('source').disabled = !active || busy;\n    find('source').value = transport?.source || (serverMode ? 'wokwi' : 'local');\n    find('local-hint').hidden = serverMode;\n    find('external-hint').hidden = !serverMode;\n    find('integration-links').hidden = !serverMode;\n    find('esp-pill').className = 'pill ' + (packet ? 'online' : transport?.source === 'wokwi' ? 'offline' : 'neutral');\n    set('esp-status', packet ? 'ESP32 conectado' : 'Sin telemetría ESP32');\n    set('link-subtitle', active ? 'Flujo de Node-RED activo' : 'Demo en navegador');\n    set('external-hint-title', packet ? 'Recepción confirmada' : 'Esperando telemetría');\n    let linkDetail = 'Abre la carpeta wokwi en VS Code y arranca el ESP32.';\n    if (packet) linkDetail = transport.source === 'wokwi'\n      ? 'La perilla fija la humedad al moverla. El suelo modelado después cambia con el riego confirmado y el secado.'\n      : 'Selecciona ESP32 externo para usar las lecturas y accionar los LEDs de válvula.';\n    set('external-hint-detail', linkDetail);\n    const valve = (number) => number === 0 ? 'Todas cerradas' : 'S' + number;\n    set('frame-count', active ? format(transport.frame) : '—');\n    set('tick-count', active ? format(transport.ticks) : '—');\n    set('esp-count', active ? format(transport.packets) : '—');\n    set('esp-last', packet ? '#' + format(packet.seq) : '—');\n    set('desired-valve', active ? valve(transport.desired) : '—');\n    set('actual-valve', packet ? valve(packet.valve) : '—');\n    set('esp-flow', packet ? format(packet.flow, 1) + ' L/min' : '—');\n    set('esp-pressure', packet ? format(packet.pressure, 1) + ' bar' : '—');\n    set('esp-temperature', packet?.air.temperature != null ? format(packet.air.temperature, 1) + ' °C' : '—');\n    set('esp-air-humidity', packet?.air.humidity != null ? format(packet.air.humidity, 1) + ' %' : '—');\n    const soilText = (values, digits) => values.map((value) => value === null ? '—' : format(value, digits) + ' %').join(' / ');\n    set('esp-knobs', packet ? soilText(packet.soil, 1) : '—');\n    set('esp-soil', packet && data.measured ? soilText(data.sectors.map((sector) => sector.valid ? sector.moisture : null), 2) : '—');\n    set('action-count', active ? format(transport.actions) : '—');\n    set('last-action', active ? (actionLabels[transport.action] || 'En espera') : '—');\n  }\n\n  function renderCentral(data) {\n    if (activeView !== 'central') return;\n    const areas = data.central || Telemetria.summary({}, 0);\n    const connected = serverMode && live();\n    set('central-online', areas.filter((area) => connected && area.online).length + ' / ' + areas.length);\n    set('central-samples', format(areas.reduce((sum, area) => sum + area.samples, 0)));\n    set('central-volume', format(areas.reduce((sum, area) => sum + area.liters, 0), 1));\n    find('central-download').disabled = !connected;\n    set('central-note', connected\n      ? 'Las tarjetas muestran la última telemetría recibida. La banda usa muestras válidas y el volumen se estima entre muestras con la misma válvula abierta. Los datos vencidos quedan como históricos.'\n      : 'Abre el panel desde Node-RED y espera la conexión para recibir muestras de Wokwi y Packet Tracer.');\n    const packetTracer = data.packetTracer;\n    const routes = { esperando: 'esperando estación', alcanzable: 'ruta HTTP disponible', 'sin-respuesta': 'sin respuesta de estación', 'respuesta-invalida': 'respuesta inválida' };\n    const pathState = (route, virtual, code) => routes[route] + (virtual ? ' · HTTP virtual ' + virtual : '')\n      + (code ? ' · Node-RED HTTP ' + code : '');\n    set('packet-status', connected && packetTracer?.online\n      ? 'Pasarela conectada. Norte: ' + pathState(packetTracer.norte, packetTracer.virtualNorte, packetTracer.postNorte)\n        + '. Sur: ' + pathState(packetTracer.sur, packetTracer.virtualSur, packetTracer.postSur) + '.'\n      : connected ? 'Sin señal de la pasarela. Abre RiegoGuard-Red.pkt en Realtime, comprueba los programas y permite el acceso HTTP local en Packet Tracer.'\n        : 'Abre la central desde Node-RED para comprobar el enlace.');\n    const reading = (value, unit) => value == null ? '—' : format(value, 1) + unit;\n    find('farm-grid').innerHTML = areas.map((area) => {\n      const currentData = connected && area.online;\n      const status = currentData ? 'Vigente' : area.last ? 'Vencida' : 'Sin datos';\n      const source = area.source === 'wokwi' ? 'ESP32 · Wokwi' : 'Red · Packet Tracer';\n      const soil = (area.last?.soil || [null, null, null, null]).map((value, index) =>\n        '<span><b>S' + (index + 1) + '</b>' + reading(value, ' %') + '</span>'\n      ).join('');\n      const modeled = currentData && area.source === 'wokwi' && data.measured\n        ? '<p class=\"farm-age\">Suelo modelado S1–S4: ' + data.sectors.map((sector) => sector.valid ? format(sector.moisture, 2) + ' %' : '—').join(' · ') + '</p>'\n        : '';\n      return `<article class=\"card farm-card\">\n        <div class=\"card-heading\"><div><h2>${area.name}</h2><p>${source}</p></div><span class=\"pill ${currentData ? 'online' : area.last ? 'offline' : 'neutral'}\"><i></i>${status}</span></div>\n        <div class=\"farm-moisture\" aria-label=\"Humedad de suelo por sector\">${soil}</div>\n        ${modeled}\n        <dl class=\"protocol-stats\">\n          <div><dt>Temperatura</dt><dd>${reading(area.last?.air.temperature, ' °C')}</dd></div>\n          <div><dt>Humedad del aire</dt><dd>${reading(area.last?.air.humidity, ' %')}</dd></div>\n          <div><dt>Caudal</dt><dd>${reading(area.last?.flow, ' L/min')}</dd></div>\n          <div><dt>Presión</dt><dd>${reading(area.last?.pressure, ' bar')}</dd></div>\n          <div><dt>Muestras en banda</dt><dd>${reading(area.band, ' %')}</dd></div>\n          <div><dt>Volumen estimado</dt><dd>${reading(area.liters, ' L')}</dd></div>\n        </dl>\n        <p class=\"farm-age\">${area.last ? 'Última muestra hace ' + format(area.age / 1000, 1) + ' s · ' + format(area.packets) + ' paquetes' : 'Esperando el primer paquete'}</p>\n      </article>`;\n    }).join('');\n  }\n\n  function renderEvents(data) {\n    find('queue').className = 'pill ' + (data.pending ? 'queued' : 'neutral');\n    set('queue-label', data.pending === 1 ? '1 pendiente' : data.pending + ' pendientes');\n    const signature = JSON.stringify(data.events);\n    if (eventSignature === signature) return;\n    eventSignature = signature;\n    const items = data.events.map((event) => {\n      const item = document.createElement('li');\n      item.className = 'event';\n      item.innerHTML = `\n        <span class=\"event-icon\">${icon(eventIcons[event.kind] || 'info')}</span>\n        <div><strong></strong><p></p></div><div class=\"event-meta\"><time></time><span></span></div>`;\n      item.querySelector('.event-icon').classList.add(event.kind);\n      item.querySelector('strong').textContent = event.title;\n      item.querySelector('p').textContent = event.detail;\n      item.querySelector('time').textContent = `D${event.day} · ${event.time}`;\n      const transmission = item.querySelector('.event-meta span');\n      transmission.classList.toggle('pending', event.pending);\n      transmission.textContent = event.pending ? 'Pendiente' : 'Confirmado';\n      return item;\n    });\n    find('events').replaceChildren(...items);\n  }\n\n  function render(data) {\n    current = data;\n    renderMetrics(data);\n    renderControls(data);\n    renderEvents(data);\n    renderScene(data);\n    renderTransport(data);\n    renderCentral(data);\n    if (activeView === 'experiment') {\n      const ready = canCapture(data);\n      find('e4-run').disabled = !ready;\n      if (!results) set('e4-input', ready\n        ? 'Captura el estado actual de los cuatro sectores y la conducción para iniciar la comparación.'\n        : 'E4 espera lecturas vigentes de los cuatro sectores. Arranca Wokwi y comprueba Enlace ESP32.');\n    }\n  }\n\n  function canCapture(data) {\n    return live() && !waitingForEsp(data) && data.sectors.every((sector) => sector.valid);\n  }\n\n  function captureExperiment() {\n    if (!canCapture(current)) return;\n    const packet = current.measured ? current.transport.packet : null;\n    experimentInput = {\n      source: packet ? 'Wokwi' : 'Simulador interno',\n      captured: new Date().toISOString(), seq: packet?.seq,\n      soil: current.sectors.map((sector) => sector.moisture), ...current.supply\n    };\n    results = RiegoGuard.experiment(experimentInput);\n    const { source, soil, flow, pressure } = experimentInput;\n    const values = soil.map((value, index) => 'S' + (index + 1) + ' ' + format(value, 2) + ' %').join(' · ');\n    set('e4-input', source + (packet ? ' #' + packet.seq : '') + ' · ' + values + ' · '\n      + format(flow, 2) + ' L/min · ' + format(pressure, 2) + ' bar · ' + new Date(experimentInput.captured).toLocaleString('es-PE'));\n    find('download').disabled = false;\n    find('e4-daily').hidden = false;\n    renderExperiment();\n  }\n\n  function renderExperiment() {\n    find('summary').innerHTML = results.map((result) => `\n      <article class=\"card score ${result.mode}\">\n        <h2>${result.label}</h2>\n        <div class=\"score-metrics\">\n          <div><span>Consumo promedio</span><strong>${format(result.intensity, 2)}</strong> <small>L/m²/día</small></div>\n          <div><span>Tiempo en banda</span><strong>${format(result.band, 1)} %</strong></div>\n        </div>\n        <div class=\"score-meter\" aria-hidden=\"true\"><span style=\"width:${result.band}%\"></span></div>\n        <p>${format(result.liters, 1)} L proyectados en siete días</p>\n      </article>`).join('');\n    const [auto, fixed] = results;\n    find('daily-results').innerHTML = auto.daily.map((day, index) => `\n      <tr><th scope=\"row\">Día ${day.day}</th><td>${format(day.intensity, 2)}</td><td>${format(day.band, 1)} %</td>\n        <td>${format(fixed.daily[index].intensity, 2)}</td><td>${format(fixed.daily[index].band, 1)} %</td></tr>`).join('');\n  }\n\n  registerControls();\n  render(RiegoGuard.snapshot(state));\n  const requestedView = new URL(location.href).searchParams.get('view');\n  if (viewIds.includes(requestedView)) showView(requestedView);\n  if (serverMode) {\n    find('native-link').hidden = false;\n    const base = new URL(document.baseURI);\n    const port = base.port || (base.protocol === 'https:' ? '443' : '80');\n    set('esp-endpoint', 'POST http://host.wokwi.internal:' + port + '/riegoguard/esp32');\n    refresh();\n    setInterval(refresh, 500);\n  } else {\n    setInterval(() => send('tick'), 1000);\n  }\n})();\n</script>\n</body>\n</html>\n",
+        "output": "str",
+        "x": 445,
+        "y": 570,
+        "wires": [
+            [
+                "rg-panel-response"
+            ]
+        ]
+    },
+    {
+        "id": "rg-panel-response",
+        "type": "http response",
+        "z": "rg-simulation",
+        "name": "Servir panel",
+        "statusCode": "200",
+        "headers": {
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control": "no-store"
+        },
+        "x": 705,
+        "y": 570,
+        "wires": []
+    },
+    {
+        "id": "rg-esp32",
+        "type": "function",
+        "z": "rg-simulation",
+        "name": "Control de riego",
+        "initialize": "'use strict';\n\nconst RiegoGuard = (() => {\n  const SECTORS = [\n    { id: 'S1', area: 100, initial: 34, drying: 3.2 },\n    { id: 'S2', area: 100, initial: 38, drying: 3.8 },\n    { id: 'S3', area: 100, initial: 36.5, drying: 4.4 },\n    { id: 'S4', area: 100, initial: 41, drying: 3.5 }\n  ];\n  const CONFIG = Object.freeze({\n    lower: 35, upper: 45, flow: 12, pressure: 1.8, minFlow: 7, minPressure: 1.2,\n    confirmationMinutes: 2, gain: 0.35, scheduleStart: 360, slot: 12, days: 7,\n    knobDelta: 0.5, maxAutoMinutes: 240\n  });\n  const MODES = { auto: 'Automatizado', fixed: 'Horario fijo' };\n  const FAULTS = { normal: 'Normal', flow: 'Caudal bajo', pressure: 'Presión baja' };\n  const DAY = 1440;\n  const liquid = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1 });\n  const clock = (minute) => {\n    const hours = String(Math.floor((minute % DAY) / 60)).padStart(2, '0');\n    const minutes = String(minute % 60).padStart(2, '0');\n    return `${hours}:${minutes}`;\n  };\n\n  function create(mode = 'auto', minute = CONFIG.scheduleStart, record = true) {\n    const state = {\n      mode, minute, running: false, online: true, fault: 'normal', active: null,\n      lock: null, supply: null, measured: false, sampleKey: null, soilBoot: null, lastSample: null,\n      openedAt: null,\n      abnormalMinutes: 0, total: 0, sequence: 0, confirmed: 0,\n      events: [], pending: [], lastSync: null, record,\n      sectors: SECTORS.map(({ id, area, initial, drying }) => ({\n        id, area, moisture: initial, drying, liters: 0, valid: true, knob: null\n      }))\n    };\n    log(state, 'Sistema listo', 'Controlador ESP32 simulado. Válvulas cerradas.', 'info');\n    return state;\n  }\n\n  function log(state, title, detail, kind = 'info') {\n    if (!state.record) return;\n    const event = { id: ++state.sequence, minute: state.minute, title, detail, kind };\n    if (state.online) {\n      state.confirmed++;\n    } else {\n      state.pending.push(event);\n    }\n    state.events.unshift(event);\n    state.events.length = Math.min(state.events.length, 100);\n  }\n\n  function upstream(state) {\n    const flow = state.supply?.flow ?? CONFIG.flow;\n    const pressure = state.supply?.pressure ?? CONFIG.pressure;\n    return {\n      flow: state.fault === 'flow' ? Math.min(3, flow) : flow,\n      pressure: state.fault === 'pressure' ? Math.min(0.7, pressure) : pressure\n    };\n  }\n\n  function readings(state) {\n    return state.active === null ? { flow: 0, pressure: 0 } : upstream(state);\n  }\n\n  function saveSample(state) {\n    if (state.active === null) return;\n    state.lastSample = { ...readings(state), sector: state.sectors[state.active].id, time: clock(state.minute) };\n  }\n\n  function openValve(state, sector) {\n    state.active = sector;\n    state.openedAt = state.minute;\n    state.abnormalMinutes = 0;\n    if (state.record) saveSample(state);\n    const reason = state.mode === 'auto' ? 'Umbral de apertura alcanzado.' : 'Inicio del turno programado.';\n    log(state, `Válvula ${state.sectors[sector].id} abierta`, reason, 'water');\n  }\n\n  function closeValve(state, reason, kind = 'info') {\n    if (state.active === null) return;\n    const id = state.sectors[state.active].id;\n    state.active = null;\n    state.openedAt = null;\n    state.abnormalMinutes = 0;\n    log(state, `Válvula ${id} cerrada`, reason, kind);\n  }\n\n  function selectValve(state) {\n    if (!state.running || state.lock || state.active !== null) return;\n    if (state.mode === 'fixed') {\n      const offset = (state.minute % DAY) - CONFIG.scheduleStart;\n      if (offset >= 0 && offset < SECTORS.length * CONFIG.slot && offset % CONFIG.slot === 0) {\n        const sector = offset / CONFIG.slot;\n        if (state.sectors[sector].valid) openValve(state, sector);\n      }\n      return;\n    }\n    const sector = state.sectors.reduce((driest, item, index) => (\n      item.valid && item.moisture <= CONFIG.lower && (driest === null || item.moisture < state.sectors[driest].moisture)\n        ? index : driest\n    ), null);\n    if (sector !== null) openValve(state, sector);\n  }\n\n  function waitMinutes(state) {\n    if (state.mode === 'fixed') {\n      const offset = state.minute % DAY - CONFIG.scheduleStart;\n      if (offset < 0) return -offset;\n      const next = Math.ceil(offset / CONFIG.slot) * CONFIG.slot;\n      return next < SECTORS.length * CONFIG.slot ? next - offset : DAY - offset;\n    }\n    if (state.measured) return null;\n    return Math.max(0, Math.min(...state.sectors.map(({ moisture, drying }) =>\n      Math.ceil((moisture - CONFIG.lower) * DAY / drying)\n    )));\n  }\n\n  function openNextTurn(state) {\n    if (!state.running || state.lock || state.active !== null) return;\n    const minutes = waitMinutes(state);\n    if (minutes > 0) {\n      for (const sector of state.sectors) {\n        if (state.measured && !sector.valid) continue;\n        const moisture = sector.moisture - sector.drying * minutes / DAY;\n        sector.moisture = Math.abs(moisture - CONFIG.lower) < 1e-8 ? CONFIG.lower : Math.max(0, moisture);\n      }\n      state.minute += minutes;\n      log(state, 'Reloj adelantado', `Se omitieron ${minutes} minutos virtuales sin riego hasta el siguiente turno.`);\n    }\n    selectValve(state);\n  }\n\n  function confirmHydraulics(state) {\n    if (state.active === null) return;\n    if (state.record) saveSample(state);\n    const sample = readings(state);\n    const lowFlow = sample.flow < CONFIG.minFlow;\n    const lowPressure = sample.pressure < CONFIG.minPressure;\n    state.abnormalMinutes = lowFlow || lowPressure ? state.abnormalMinutes + 1 : 0;\n    if (state.abnormalMinutes < CONFIG.confirmationMinutes) return;\n    const reason = lowFlow\n      ? `Caudal bajo · ${sample.flow} L/min (mín. ${CONFIG.minFlow} L/min).`\n      : `Presión baja · ${liquid.format(sample.pressure)} bar (mín. ${liquid.format(CONFIG.minPressure)} bar).`;\n    state.lock = { sector: state.sectors[state.active].id, reason, ...sample };\n    state.running = false;\n    closeValve(state, reason, 'alarm');\n  }\n\n  function canRearm(state) {\n    if (!state.lock) return true;\n    const { flow, pressure } = upstream(state);\n    return state.fault === 'normal' && (!state.measured || state.supply !== null)\n      && flow >= CONFIG.minFlow && pressure >= CONFIG.minPressure;\n  }\n\n  function setSupply(state, measured, packet) {\n    if (state.measured !== measured) {\n      state.sampleKey = null;\n      state.soilBoot = null;\n    }\n    state.measured = measured;\n    state.supply = measured ? packet : null;\n    if (!measured || !packet) {\n      for (const sector of state.sectors) sector.valid = !measured;\n      return;\n    }\n    const key = packet.boot + ':' + packet.seq;\n    if (state.sampleKey === key) return;\n    state.sampleKey = key;\n    const newBoot = state.soilBoot !== packet.boot;\n    state.soilBoot = packet.boot;\n    state.sectors.forEach((sector, index) => {\n      const value = packet.soil[index];\n      if (value !== null && (newBoot || sector.knob === null || Math.abs(value - sector.knob) >= CONFIG.knobDelta - 1e-8)) {\n        sector.moisture = value;\n        sector.knob = value;\n      }\n      if (value === null) sector.knob = null;\n      sector.valid = value !== null;\n    });\n    if (state.active === null) return;\n    const sector = state.sectors[state.active];\n    if (!sector.valid) closeValve(state, 'Humedad de suelo sin lectura válida.', 'alarm');\n    else if (state.mode === 'auto' && sector.moisture >= CONFIG.upper) {\n      closeValve(state, `Objetivo del ${CONFIG.upper} % alcanzado.`, 'success');\n    } else confirmHydraulics(state);\n  }\n\n  function step(state) {\n    if (!state.running) {\n      if (state.measured && state.supply) applySoilMinute(state, 0);\n      return;\n    }\n    selectValve(state);\n    if (!state.measured) confirmHydraulics(state);\n    const confirmed = !state.measured || (state.active !== null && state.supply?.valve === state.active + 1);\n    applySoilMinute(state, confirmed ? readings(state).flow : 0);\n    state.minute++;\n\n    if (state.active === null) return;\n    if (state.mode === 'auto' && state.sectors[state.active].moisture >= CONFIG.upper) {\n      closeValve(state, `Objetivo del ${CONFIG.upper} % alcanzado.`, 'success');\n    } else if (state.mode === 'auto' && state.minute - state.openedAt >= CONFIG.maxAutoMinutes) {\n      const reason = `Límite de ${CONFIG.maxAutoMinutes} minutos virtuales sin alcanzar la humedad objetivo.`;\n      state.lock = { sector: state.sectors[state.active].id, reason, ...readings(state) };\n      state.running = false;\n      closeValve(state, reason, 'alarm');\n    } else if (state.mode === 'fixed' && (state.minute % DAY - CONFIG.scheduleStart) % CONFIG.slot === 0) {\n      closeValve(state, 'Turno programado completado.', 'success');\n    }\n  }\n\n  function applySoilMinute(state, flow) {\n    state.sectors.forEach((sector, index) => {\n      const applied = index === state.active ? flow : 0;\n      if (sector.valid) {\n        const moisture = sector.moisture - sector.drying / DAY + CONFIG.gain * applied / CONFIG.flow;\n        sector.moisture = Math.min(100, Math.max(0, moisture));\n      }\n      sector.liters += applied;\n      state.total += applied;\n    });\n  }\n\n  function dispatch(state, topic, value) {\n    switch (topic) {\n      case 'tick':\n        step(state);\n        break;\n      case 'start':\n        if (state.running || !canRearm(state)) break;\n        if (state.lock) log(state, 'Protección rearmada', 'Condición hidráulica normal.', 'success');\n        state.lock = null;\n        state.running = true;\n        log(state, 'Riego iniciado', MODES[state.mode] + '.', 'water');\n        openNextTurn(state);\n        break;\n      case 'next':\n        openNextTurn(state);\n        break;\n      case 'stop':\n        if (!state.running) break;\n        closeValve(state, 'Parada manual.');\n        state.running = false;\n        log(state, 'Riego detenido', 'El reloj de la simulación está en pausa.');\n        break;\n      case 'source-lost':\n        closeValve(state, 'Se perdió la telemetría del ESP32.', 'alarm');\n        state.running = false;\n        log(state, 'ESP32 desconectado', 'Válvulas cerradas. Reanuda el riego cuando vuelva la telemetría.', 'alarm');\n        break;\n      case 'source':\n        closeValve(state, 'Cambio de fuente de control.');\n        state.running = false;\n        log(state, 'Fuente de control actualizada', value);\n        break;\n      case 'reset':\n        return create();\n      case 'mode':\n        if (!Object.hasOwn(MODES, value) || state.mode === value) break;\n        closeValve(state, 'Cambio de estrategia.');\n        state.running = false;\n        state.mode = value;\n        log(state, 'Estrategia actualizada', MODES[value] + '.');\n        break;\n      case 'fault':\n        if (!Object.hasOwn(FAULTS, value) || state.fault === value) break;\n        state.fault = value;\n        state.abnormalMinutes = 0;\n        if (state.record) saveSample(state);\n        log(state, 'Escenario actualizado', FAULTS[value] + '.');\n        break;\n      case 'online':\n        if (typeof value !== 'boolean' || state.online === value) break;\n        state.online = value;\n        if (!value) {\n          log(state, 'Conexión interrumpida', 'El control local sigue disponible. Los eventos quedan en cola.', 'warning');\n          break;\n        }\n        state.lastSync = { count: state.pending.length, minute: state.minute };\n        state.confirmed += state.pending.length;\n        state.pending = [];\n        log(state, 'Conexión restablecida', `Eventos recuperados: ${state.lastSync.count}.`, 'success');\n        break;\n    }\n    return state;\n  }\n\n  function snapshot(state) {\n    const pending = state.pending.map(({ id }) => id);\n    const pendingIds = new Set(pending);\n    return {\n      mode: state.mode, running: state.running, fault: state.fault, active: state.active,\n      online: state.online, lock: state.lock, pending: pending.length, confirmed: state.confirmed,\n      total: state.total, lastSync: state.lastSync,\n      day: Math.floor(state.minute / DAY) + 1, time: clock(state.minute), ...readings(state),\n      supply: upstream(state), lastSample: state.lastSample, measured: state.measured, canRearm: canRearm(state),\n      nextMinutes: state.active === null && !state.lock ? waitMinutes(state) : null,\n      sectors: state.sectors.map((sector, index) => ({\n        id: sector.id, area: sector.area, moisture: Number(sector.moisture.toFixed(2)),\n        open: index === state.active, valid: sector.valid, below: sector.moisture < CONFIG.lower,\n        above: sector.moisture > CONFIG.upper, liters: sector.liters\n      })),\n      events: state.events.slice(0, 20).map((event) => ({\n        ...event, time: clock(event.minute), day: Math.floor(event.minute / DAY) + 1,\n        pending: pendingIds.has(event.id)\n      }))\n    };\n  }\n\n  function experiment(input = null) {\n    if (input && (!Array.isArray(input.soil) || input.soil.length !== SECTORS.length\n      || input.soil.some((value) => !Number.isFinite(value) || value < 0 || value > 100)\n      || !Number.isFinite(input.flow) || input.flow < 0 || input.flow > CONFIG.flow\n      || !Number.isFinite(input.pressure) || input.pressure < 0 || input.pressure > CONFIG.pressure)) {\n      throw new RangeError('E4 requiere cuatro humedades e hidráulica válidas.');\n    }\n    const area = SECTORS.reduce((sum, sector) => sum + sector.area, 0);\n    const minutes = CONFIG.days * DAY;\n    return ['auto', 'fixed'].map((mode) => {\n      const state = create(mode, 0, false);\n      if (input) {\n        state.sectors.forEach((sector, index) => { sector.moisture = input.soil[index]; });\n        state.supply = { flow: input.flow, pressure: input.pressure };\n      }\n      state.running = true;\n      const inBand = SECTORS.map(() => 0);\n      const daily = [];\n      let dailyBaseline = 0;\n      let dailyBand = 0;\n      for (let minute = 1; minute <= minutes; minute++) {\n        step(state);\n        state.sectors.forEach(({ moisture }, index) => {\n          if (moisture >= CONFIG.lower && moisture <= CONFIG.upper) {\n            inBand[index]++;\n            dailyBand++;\n          }\n        });\n        if (minute % DAY === 0) {\n          daily.push({\n            day: minute / DAY,\n            liters: state.total - dailyBaseline,\n            intensity: (state.total - dailyBaseline) / area,\n            band: dailyBand * 100 / (DAY * SECTORS.length)\n          });\n          dailyBaseline = state.total;\n          dailyBand = 0;\n        }\n      }\n      return {\n        mode, label: MODES[mode], liters: state.total, intensity: state.total / (area * CONFIG.days),\n        band: inBand.reduce((sum, count) => sum + count, 0) * 100 / (minutes * SECTORS.length),\n        daily,\n        sectors: state.sectors.map((sector, index) => ({\n          id: sector.id, liters: sector.liters, bandMinutes: inBand[index], band: inBand[index] * 100 / minutes\n        }))\n      };\n    });\n  }\n\n  function csv(results = experiment(), input = null) {\n    const rows = [['estrategia', 'periodo', 'litros', 'litros_m2_dia', 'tiempo_en_banda_pct']];\n    for (const result of results) {\n      rows.push([result.label, '7 días', result.liters, result.intensity.toFixed(4), result.band.toFixed(4)]);\n      for (const day of result.daily) {\n        rows.push([result.label, `Día ${day.day}`, day.liters, day.intensity.toFixed(4), day.band.toFixed(4)]);\n      }\n    }\n    if (input) {\n      rows[0].push('origen', 'captura_utc', 'secuencia_wokwi', 's1_inicial_pct', 's2_inicial_pct', 's3_inicial_pct',\n        's4_inicial_pct', 'caudal_disponible_l_min', 'presion_disponible_bar');\n      for (const row of rows.slice(1)) row.push(input.source, input.captured, input.seq ?? '', ...input.soil, input.flow, input.pressure);\n    }\n    return rows.map((row) => row.join(',')).join('\\r\\n') + '\\r\\n';\n  }\n\n  return { CONFIG, MODES, FAULTS, create, dispatch, snapshot, experiment, csv, setSupply, canRearm };\n})();\n\nif (typeof module !== 'undefined' && module.exports) module.exports = RiegoGuard;\n\n'use strict';\n\nconst Telemetria = (() => {\n  const AREAS = Object.freeze({\n    'tacna-centro': { name: 'Tacna Centro', source: 'wokwi', ttl: 4200 },\n    'tacna-norte': { name: 'Tacna Norte', source: 'packet-tracer', ttl: 8500 },\n    'tacna-sur': { name: 'Tacna Sur', source: 'packet-tracer', ttl: 8500 }\n  });\n  const between = (value, min, max) => Number.isFinite(value) && value >= min && value <= max;\n  const present = (value, min, max) => value === null || between(value, min, max);\n\n  function accept(store, data, source, now, config) {\n    const reject = (error, status = 400) => ({ error, status });\n    if (!data || data.v !== 2) return reject('Se requiere telemetría v2 con humedad S1–S4.');\n    const area = Object.hasOwn(AREAS, data.farm) ? AREAS[data.farm] : null;\n    if (!area || area.source !== source || typeof data.boot !== 'string' || !/^[a-zA-Z0-9_-]{1,40}$/.test(data.boot)\n      || !Number.isSafeInteger(data.seq) || !between(data.seq, 1, 4294967295)\n      || !Number.isInteger(data.valve) || !between(data.valve, 0, 4)\n      || !between(data.flow, 0, config.flow) || !between(data.pressure, 0, config.pressure)\n      || !Array.isArray(data.soil) || data.soil.length !== 4 || !data.soil.every((value) => present(value, 0, 100))\n      || !data.air || !present(data.air.temperature, -40, 80) || !present(data.air.humidity, 0, 100)) {\n      return reject('Campos o parcela inválidos.');\n    }\n    if (source === 'wokwi' && data.sampledAt === 0) return { sync: true };\n    if (!Number.isSafeInteger(data.sampledAt) || data.sampledAt <= 0\n      || data.sampledAt > now + 1500 || now - data.sampledAt >= area.ttl) {\n      return reject('Muestra vencida o reloj fuera de rango.', 409);\n    }\n    const entry = store[data.farm] || { packets: 0, samples: 0, inBand: 0, liters: 0, last: null, retired: [] };\n    const previous = entry.last;\n    if (previous && (entry.retired.includes(data.boot) || data.sampledAt < previous.sampledAt\n      || (data.boot === previous.boot && data.seq <= previous.seq)\n      || (data.boot !== previous.boot && data.sampledAt <= previous.sampledAt))) {\n      return reject('Muestra repetida o fuera de orden.', 409);\n    }\n    if (previous?.boot !== undefined && previous.boot !== data.boot) {\n      entry.retired = [...entry.retired, previous.boot].slice(-16);\n    }\n    const elapsed = previous ? data.sampledAt - previous.sampledAt : 0;\n    if (previous?.boot === data.boot && data.valve > 0 && data.valve === previous.valve && elapsed > 0 && elapsed < area.ttl) {\n      entry.liters += (previous.flow + data.flow) * elapsed / 120000;\n    }\n    for (const moisture of data.soil) {\n      if (moisture === null) continue;\n      entry.samples++;\n      if (moisture >= config.lower && moisture <= config.upper) entry.inBand++;\n    }\n    entry.packets++;\n    const packet = {\n      boot: data.boot, seq: data.seq, valve: data.valve, flow: data.flow, pressure: data.pressure,\n      soil: data.soil, air: { temperature: data.air.temperature, humidity: data.air.humidity },\n      sampledAt: data.sampledAt, at: now\n    };\n    entry.last = packet;\n    store[data.farm] = entry;\n    return { packet, entry };\n  }\n\n  function available(packet, area, now) {\n    return Boolean(packet && now - packet.sampledAt < AREAS[area].ttl && now - packet.at < AREAS[area].ttl);\n  }\n\n  function summary(store, now) {\n    return Object.entries(AREAS).map(([id, area]) => {\n      const item = store[id];\n      const last = item?.last || null;\n      const soil = last?.soil.filter((value) => value !== null) || [];\n      return {\n        id, name: area.name, source: area.source, last, online: available(last, id, now),\n        age: last ? Math.max(0, now - last.sampledAt) : null,\n        packets: item?.packets ?? 0, samples: item?.samples ?? 0, liters: item?.liters ?? 0,\n        band: item?.samples ? 100 * item.inBand / item.samples : null,\n        meanSoil: soil.length ? soil.reduce((sum, value) => sum + value, 0) / soil.length : null\n      };\n    });\n  }\n\n  return { accept, available, summary };\n})();\n\nif (typeof module !== 'undefined' && module.exports) module.exports = Telemetria;\n\ncontext.set(\"modelo\", RiegoGuard);\ncontext.set(\"estado\", RiegoGuard.create());\ncontext.set(\"telemetria\", Telemetria);\nlet datos = {};\ntry { datos = context.get(\"central\", \"historico\") || {}; } catch {}\ncontext.set(\"central\", datos);\ncontext.set(\"bus\", { boot: Date.now(), source: \"wokwi\", packet: null, packets: 0, connected: false, frame: 0, ticks: 0, actions: 0, action: null });",
+        "func": "// Cuerpo del nodo function «Control de riego» generado en flows.json.\nconst model = context.get('modelo');\nconst telemetry = context.get('telemetria');\nconst central = context.get('central');\nlet state = context.get('estado');\nconst bus = context.get('bus');\nconst now = Date.now();\nconst command = msg.topic === 'orden-http';\nlet topic = msg.topic;\nlet value = msg.payload;\nlet error;\n\nfunction httpReply(statusCode, payload, type = 'application/json; charset=utf-8') {\n  return { req: msg.req, res: msg.res, statusCode, headers: { 'Content-Type': type }, payload };\n}\n\nif (command) {\n  const valid = {\n    start: () => true, next: () => true, stop: () => true, reset: () => true,\n    mode: (item) => Object.hasOwn(model.MODES, item),\n    fault: (item) => Object.hasOwn(model.FAULTS, item),\n    online: (item) => typeof item === 'boolean',\n    source: (item) => item === 'local' || item === 'wokwi'\n  };\n  topic = msg.payload?.topic;\n  value = msg.payload?.value;\n  if (typeof topic !== 'string' || !Object.hasOwn(valid, topic) || !valid[topic](value)) {\n    return [null, httpReply(400, { error: 'Orden inválida' }), null];\n  }\n}\n\nif (topic === 'central-http') {\n  return [null, httpReply(200, { updatedAt: now, areas: telemetry.summary(central, now), packetTracer: bus.packetTracer ?? null }), null];\n}\n\nif (topic === 'red-status-http') {\n  const { norte, sur, postNorte, postSur, virtualNorte = 0, virtualSur = 0 } = msg.payload || {};\n  const stages = ['esperando', 'alcanzable', 'sin-respuesta', 'respuesta-invalida'];\n  const validCode = (code) => Number.isInteger(code) && code >= 0 && code <= 599;\n  if (!stages.includes(norte) || !stages.includes(sur) || ![postNorte, postSur, virtualNorte, virtualSur].every(validCode)) {\n    return [null, httpReply(400, { error: 'Diagnóstico inválido.' }), null];\n  }\n  bus.packetTracer = { at: now, norte, sur, postNorte, postSur, virtualNorte, virtualSur };\n  return [null, httpReply(200, { ok: true }), null];\n}\n\nif (topic === 'esp32' || topic === 'red-http') {\n  const source = topic === 'esp32' ? 'wokwi' : 'packet-tracer';\n  const result = telemetry.accept(central, msg.payload, source, now, model.CONFIG);\n  if (result.error) return [null, httpReply(result.status, { error: result.error, version: 2 }), null];\n  if (result.sync) {\n    return [null, httpReply(200, 'RG2 0 ' + bus.frame + ' ' + now + '\\n', 'text/plain; charset=utf-8'), null];\n  }\n  try {\n    context.set('central', central, 'historico');\n  } catch {\n    // En una instalación importada sin el almacén opcional, central sigue en memoria.\n  }\n  if (source === 'packet-tracer') {\n    return [null, httpReply(200, { ok: true, farm: msg.payload.farm, packets: result.entry.packets }), {\n      topic: 'packet-tracer', payload: { parcela: msg.payload.farm, secuencia: result.packet.seq, paquetes: result.entry.packets }\n    }];\n  }\n  bus.packet = result.packet;\n  bus.packets = result.entry.packets;\n}\n\nconst available = telemetry.available(bus.packet, 'tacna-centro', now);\nconst connectionChanged = available !== bus.connected;\nif (bus.source === 'wokwi' && !available && bus.connected) {\n  model.dispatch(state, 'source-lost');\n}\nbus.connected = available;\n\nif (topic === 'source') {\n  const next = value;\n  if (!error && (next === 'local' || next === 'wokwi') && next !== bus.source) {\n    bus.source = next;\n    model.dispatch(state, 'source', next === 'wokwi' ? 'ESP32 externo (Wokwi).' : 'Simulador interno.');\n  }\n}\nconst external = bus.source === 'wokwi';\nmodel.setSupply(state, external, available ? bus.packet : null);\n\nif (topic === 'tick') {\n  bus.ticks++;\n}\nif (!error && (topic === 'start' || topic === 'next') && external && !available) {\n  error = 'Se perdió la comunicación con el ESP32. Comprueba el enlace o elige Simulador interno.';\n}\nif (!error && command && (topic === 'start' || topic === 'next') && !model.canRearm(state)) {\n  error = 'Restablece la condición Normal y verifica que el caudal y la presión se recuperaron antes de rearmar.';\n}\nif (['start', 'next', 'stop', 'reset', 'mode', 'fault', 'online', 'source'].includes(topic)) {\n  bus.actions++;\n  bus.action = topic;\n}\nif (!error && ['tick', 'reset', 'start', 'next', 'stop', 'mode', 'fault', 'online'].includes(topic)) {\n  state = model.dispatch(state, topic, value);\n  model.setSupply(state, external, available ? bus.packet : null);\n}\ncontext.set('estado', state);\nbus.frame += topic === 'estado-http' ? 0 : 1;\nconst snapshot = model.snapshot(state);\nconst desired = external && available && snapshot.active !== null ? snapshot.active + 1 : 0;\nsnapshot.transport = {\n  nodeRed: true, boot: bus.boot, frame: bus.frame, ticks: bus.ticks, actions: bus.actions, action: bus.action,\n  source: bus.source, connected: available, packets: bus.packets, packet: bus.packet, desired\n};\nsnapshot.central = telemetry.summary(central, now);\nsnapshot.packetTracer = bus.packetTracer ? { ...bus.packetTracer, online: now - bus.packetTracer.at < 9000 } : null;\n\nif (topic === 'estado-http') {\n  return [null, httpReply(200, { project: 'RiegoGuard-Tacna', version: 5, state: snapshot }), null];\n}\n\nnode.status({\n  fill: snapshot.lock ? 'red' : external && !available ? 'yellow' : 'green',\n  shape: snapshot.active === null ? 'ring' : 'dot',\n  text: (external ? 'ESP32 · ' : 'Local · ') + (snapshot.active === null ? 'cerradas' : 'S' + (snapshot.active + 1)) + ' · #' + bus.frame\n});\nconst output = { topic: 'estado', payload: snapshot };\nconst response = topic === 'esp32'\n  ? httpReply(200, 'RG2 ' + desired + ' ' + bus.frame + ' ' + now + '\\n', 'text/plain; charset=utf-8')\n  : command ? httpReply(error ? 409 : 200, { ok: !error, error, state: snapshot }) : null;\nconst trace = connectionChanged || (topic !== 'tick' && topic !== 'esp32' && topic !== 'ready')\n  || (topic === 'tick' && bus.ticks % 5 === 0);\nconst diagnostic = trace ? {\n  topic: topic || 'inicio',\n  payload: {\n    trama: bus.frame, reloj: bus.ticks,\n    sector: snapshot.active === null ? null : 'S' + (snapshot.active + 1),\n    caudal: snapshot.flow, presion: snapshot.pressure, ultimaOrden: bus.action,\n    fuente: bus.source, telemetria: bus.packets, esp32EnLinea: available,\n    consignaESP32: desired, confirmacionESP32: available ? bus.packet.valve : null\n  }\n} : null;\nreturn [output, response, diagnostic];",
+        "outputs": 3,
+        "outputLabels": [
+            "Medidores nativos",
+            "Respuesta HTTP",
+            "Actividad del flujo"
+        ],
+        "x": 660,
+        "y": 205,
+        "wires": [
+            [
+                "rg-metrics"
+            ],
+            [
+                "rg-http-response"
+            ],
+            [
+                "rg-debug"
+            ]
+        ],
+        "libs": [],
+        "timeout": 0,
+        "noerr": 0
+    },
+    {
+        "id": "rg-http-response",
+        "type": "http response",
+        "z": "rg-simulation",
+        "name": "Responder a panel y ESP32",
+        "statusCode": "",
+        "headers": {},
+        "x": 935,
+        "y": 335,
+        "wires": []
+    },
+    {
+        "id": "rg-debug",
+        "type": "debug",
+        "z": "rg-simulation",
+        "name": "Actividad del flujo",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 915,
+        "y": 395,
+        "wires": []
+    },
+    {
+        "id": "rg-panel",
+        "type": "ui-template",
+        "z": "rg-simulation",
+        "group": "rg-panel-group",
+        "name": "Panel en FlowFuse",
+        "order": 1,
+        "width": 0,
+        "height": 1,
+        "format": "\n<template>\n  <Teleport to=\"body\">\n    <iframe class=\"riegoguard-frame\" src=\"/riegoguard/panel\" title=\"Panel de RiegoGuard Tacna\"></iframe>\n  </Teleport>\n</template>\n<style>\n.riegoguard-frame { position: fixed; inset: 0; border: 0; width: 100vw; height: 100dvh; background: #f4f6f3; z-index: 2500; }\nhtml:has(.riegoguard-frame) { overflow: hidden; }\nbody:has(> .riegoguard-frame) #app { visibility: hidden; }\n</style>",
+        "storeOutMessages": true,
+        "passthru": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 940,
+        "y": 110,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "rg-metrics",
+        "type": "function",
+        "z": "rg-simulation",
+        "name": "Distribuir lecturas por sector",
+        "outputs": 10,
+        "x": 945,
+        "y": 215,
+        "noerr": 0,
+        "libs": [],
+        "func": "const { flow, pressure, sectors } = msg.payload;\nconst numero = (value) => value.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 });\nreturn [\n  { payload: numero(flow) + ' L/min' }, { payload: numero(pressure) + ' bar' },\n  ...sectors.flatMap(({ moisture, open, valid }) => [{ payload: valid ? moisture : null }, { payload: valid ? open ? 'Abierta' : 'Cerrada' : 'Suelo sin lectura' }])\n];",
+        "outputLabels": [
+            "Caudal",
+            "Presión",
+            "S1 humedad",
+            "S1 válvula",
+            "S2 humedad",
+            "S2 válvula",
+            "S3 humedad",
+            "S3 válvula",
+            "S4 humedad",
+            "S4 válvula"
+        ],
+        "wires": [
+            [
+                "rg-flow-text"
+            ],
+            [
+                "rg-pressure-text"
+            ],
+            [
+                "rg-humidity-1"
+            ],
+            [
+                "rg-valve-1"
+            ],
+            [
+                "rg-humidity-2"
+            ],
+            [
+                "rg-valve-2"
+            ],
+            [
+                "rg-humidity-3"
+            ],
+            [
+                "rg-valve-3"
+            ],
+            [
+                "rg-humidity-4"
+            ],
+            [
+                "rg-valve-4"
+            ]
+        ]
+    },
+    {
+        "id": "rg-dashboard",
+        "type": "ui-base",
+        "name": "RiegoGuard Tacna",
+        "path": "/riego",
+        "appIcon": "",
+        "includeClientData": false,
+        "acceptsClientConfig": [],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "rg-theme",
+        "type": "ui-theme",
+        "name": "RiegoGuard",
+        "colors": {
+            "surface": "#14372d",
+            "primary": "#24684f",
+            "bgPage": "#f4f6f3",
+            "groupBg": "#ffffff",
+            "groupOutline": "#dce5dd"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "14px",
+            "groupGap": "12px",
+            "groupBorderRadius": "10px",
+            "widgetGap": "10px"
+        }
+    },
+    {
+        "id": "rg-panel-page",
+        "type": "ui-page",
+        "name": "RiegoGuard Tacna",
+        "ui": "rg-dashboard",
+        "path": "/panel",
+        "icon": "leaf",
+        "layout": "grid",
+        "theme": "rg-theme",
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "breakpoints": [
+            {
+                "name": "Móvil",
+                "px": 0,
+                "cols": 6
+            },
+            {
+                "name": "Escritorio",
+                "px": 768,
+                "cols": 12
+            }
+        ]
+    },
+    {
+        "id": "rg-native-page",
+        "type": "ui-page",
+        "name": "Medidores de la parcela",
+        "ui": "rg-dashboard",
+        "path": "/medidores",
+        "icon": "gauge",
+        "layout": "grid",
+        "theme": "rg-theme",
+        "order": 2,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "breakpoints": [
+            {
+                "name": "Móvil",
+                "px": 0,
+                "cols": 6
+            },
+            {
+                "name": "Escritorio",
+                "px": 768,
+                "cols": 12
+            }
+        ]
+    },
+    {
+        "id": "rg-panel-group",
+        "type": "ui-group",
+        "page": "rg-panel-page",
+        "name": "Panel",
+        "order": 1,
+        "width": 12,
+        "height": 1,
+        "showTitle": false,
+        "visible": true,
+        "disabled": false,
+        "groupType": "default",
+        "keepLoaded": false,
+        "className": ""
+    },
+    {
+        "id": "rg-pipe",
+        "type": "ui-group",
+        "page": "rg-native-page",
+        "name": "Conducción compartida",
+        "order": 1,
+        "width": 12,
+        "height": 1,
+        "showTitle": true,
+        "visible": true,
+        "disabled": false,
+        "groupType": "default",
+        "keepLoaded": false,
+        "className": ""
+    },
+    {
+        "id": "rg-flow-text",
+        "type": "ui-text",
+        "z": "rg-simulation",
+        "group": "rg-pipe",
+        "name": "Caudal de la conducción",
+        "label": "Caudal",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 1240,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "rg-pressure-text",
+        "type": "ui-text",
+        "z": "rg-simulation",
+        "group": "rg-pipe",
+        "name": "Presión de la conducción",
+        "label": "Presión",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 1240,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "rg-sector-1",
+        "type": "ui-group",
+        "page": "rg-native-page",
+        "name": "S1 · 100 m²",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "showTitle": true,
+        "visible": true,
+        "disabled": false,
+        "groupType": "default",
+        "keepLoaded": false,
+        "className": ""
+    },
+    {
+        "id": "rg-humidity-1",
+        "type": "ui-gauge",
+        "z": "rg-simulation",
+        "group": "rg-sector-1",
+        "name": "S1 · Humedad",
+        "order": 1,
+        "width": 0,
+        "height": 3,
+        "value": "payload",
+        "valueType": "msg",
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Humedad",
+        "alwaysShowTitle": true,
+        "floatingTitlePosition": "top-left",
+        "units": "Humedad del suelo",
+        "suffix": "%",
+        "icon": "",
+        "prefix": "",
+        "min": 0,
+        "max": 100,
+        "segments": [
+            {
+                "from": 0,
+                "color": "#d5a253"
+            },
+            {
+                "from": 35,
+                "color": "#4a9b72"
+            },
+            {
+                "from": 45,
+                "color": "#779aab"
+            }
+        ],
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 1240,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "rg-valve-1",
+        "type": "ui-text",
+        "z": "rg-simulation",
+        "group": "rg-sector-1",
+        "name": "S1 · Válvula",
+        "label": "Válvula",
+        "order": 2,
+        "width": 0,
+        "height": 1,
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 1240,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "rg-sector-2",
+        "type": "ui-group",
+        "page": "rg-native-page",
+        "name": "S2 · 100 m²",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "showTitle": true,
+        "visible": true,
+        "disabled": false,
+        "groupType": "default",
+        "keepLoaded": false,
+        "className": ""
+    },
+    {
+        "id": "rg-humidity-2",
+        "type": "ui-gauge",
+        "z": "rg-simulation",
+        "group": "rg-sector-2",
+        "name": "S2 · Humedad",
+        "order": 1,
+        "width": 0,
+        "height": 3,
+        "value": "payload",
+        "valueType": "msg",
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Humedad",
+        "alwaysShowTitle": true,
+        "floatingTitlePosition": "top-left",
+        "units": "Humedad del suelo",
+        "suffix": "%",
+        "icon": "",
+        "prefix": "",
+        "min": 0,
+        "max": 100,
+        "segments": [
+            {
+                "from": 0,
+                "color": "#d5a253"
+            },
+            {
+                "from": 35,
+                "color": "#4a9b72"
+            },
+            {
+                "from": 45,
+                "color": "#779aab"
+            }
+        ],
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 1240,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "rg-valve-2",
+        "type": "ui-text",
+        "z": "rg-simulation",
+        "group": "rg-sector-2",
+        "name": "S2 · Válvula",
+        "label": "Válvula",
+        "order": 2,
+        "width": 0,
+        "height": 1,
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 1240,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "rg-sector-3",
+        "type": "ui-group",
+        "page": "rg-native-page",
+        "name": "S3 · 100 m²",
+        "order": 4,
+        "width": 6,
+        "height": 1,
+        "showTitle": true,
+        "visible": true,
+        "disabled": false,
+        "groupType": "default",
+        "keepLoaded": false,
+        "className": ""
+    },
+    {
+        "id": "rg-humidity-3",
+        "type": "ui-gauge",
+        "z": "rg-simulation",
+        "group": "rg-sector-3",
+        "name": "S3 · Humedad",
+        "order": 1,
+        "width": 0,
+        "height": 3,
+        "value": "payload",
+        "valueType": "msg",
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Humedad",
+        "alwaysShowTitle": true,
+        "floatingTitlePosition": "top-left",
+        "units": "Humedad del suelo",
+        "suffix": "%",
+        "icon": "",
+        "prefix": "",
+        "min": 0,
+        "max": 100,
+        "segments": [
+            {
+                "from": 0,
+                "color": "#d5a253"
+            },
+            {
+                "from": 35,
+                "color": "#4a9b72"
+            },
+            {
+                "from": 45,
+                "color": "#779aab"
+            }
+        ],
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 1240,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "rg-valve-3",
+        "type": "ui-text",
+        "z": "rg-simulation",
+        "group": "rg-sector-3",
+        "name": "S3 · Válvula",
+        "label": "Válvula",
+        "order": 2,
+        "width": 0,
+        "height": 1,
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 1240,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "rg-sector-4",
+        "type": "ui-group",
+        "page": "rg-native-page",
+        "name": "S4 · 100 m²",
+        "order": 5,
+        "width": 6,
+        "height": 1,
+        "showTitle": true,
+        "visible": true,
+        "disabled": false,
+        "groupType": "default",
+        "keepLoaded": false,
+        "className": ""
+    },
+    {
+        "id": "rg-humidity-4",
+        "type": "ui-gauge",
+        "z": "rg-simulation",
+        "group": "rg-sector-4",
+        "name": "S4 · Humedad",
+        "order": 1,
+        "width": 0,
+        "height": 3,
+        "value": "payload",
+        "valueType": "msg",
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Humedad",
+        "alwaysShowTitle": true,
+        "floatingTitlePosition": "top-left",
+        "units": "Humedad del suelo",
+        "suffix": "%",
+        "icon": "",
+        "prefix": "",
+        "min": 0,
+        "max": 100,
+        "segments": [
+            {
+                "from": 0,
+                "color": "#d5a253"
+            },
+            {
+                "from": 35,
+                "color": "#4a9b72"
+            },
+            {
+                "from": 45,
+                "color": "#779aab"
+            }
+        ],
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 1240,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "rg-valve-4",
+        "type": "ui-text",
+        "z": "rg-simulation",
+        "group": "rg-sector-4",
+        "name": "S4 · Válvula",
+        "label": "Válvula",
+        "order": 2,
+        "width": 0,
+        "height": 1,
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 1240,
+        "y": 460,
+        "wires": []
+    }
+]

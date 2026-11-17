@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>RiegoGuard Tacna</title>
+  <link rel="stylesheet" href="app/panel.css">
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" class="symbols" aria-hidden="true">
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M20 4C11 4 5 8 5 14a5 5 0 0 0 5 5c6 0 10-6 10-15Z"/><path d="M4 21c3-4 7-8 11-11"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 4v16h16M9 15v-4m5 4V7m5 8V4"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M19 10c0 5-7 10-7 10S5 15 5 10a7 7 0 0 1 14 0Z"/><circle cx="12" cy="10" r="2"/></symbol>
+    <symbol id="i-water" viewBox="0 0 24 24"><path d="M12 3s-6 7-6 11a6 6 0 0 0 12 0c0-4-6-11-6-11Z"/><path d="M9 14a3 3 0 0 0 3 3"/></symbol>
+    <symbol id="i-flow" viewBox="0 0 24 24"><path d="M3 8h17m-4-4 4 4-4 4M21 16H4m4-4-4 4 4 4"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 18a9 9 0 1 1 16 0H4Zm8-4 4-5"/><circle cx="12" cy="14" r="1"/></symbol>
+    <symbol id="i-valve" viewBox="0 0 24 24"><path d="M3 8v8l9-4-9-4Zm18 0v8l-9-4 9-4ZM12 12V5m-4 0h8"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h7m4 0h5M4 17h3m4 0h9"/><circle cx="13" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M4 9a12 12 0 0 1 16 0M7 13a8 8 0 0 1 10 0m-7 4a3 3 0 0 1 4 0"/><circle cx="12" cy="20" r=".5"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M5 10a7 7 0 1 1 1 7m-2-7V5m0 5h5"/></symbol>
+    <symbol id="i-activity" viewBox="0 0 24 24"><path d="M3 12h5l3-7 3 14 3-7h4"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.8 19a.6.6 0 0 0 .5 1h17.4a.6.6 0 0 0 .5-1L12 4Zm0 6v4m0 3h.01"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m-4-4 4 4 4-4M5 16v4h14v-4"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-cube" viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Zm0 9 8-4.5M12 12 4 7.5M12 12v9"/></symbol>
+    <symbol id="i-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 3v3m6-3v3m-6 12v3m6-3v3M3 9h3m-3 6h3m12-6h3m-3 6h3"/><rect x="10" y="10" width="4" height="4" rx=".5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  </svg>
+
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark"><svg><use href="#i-leaf"/></svg></span>
+        <span><strong>RiegoGuard</strong><small>TACNA, PERÚ</small></span>
+      </div>
+      <nav class="navigation" aria-label="Vistas del sistema">
+        <button class="nav-button current" data-view="simulation" aria-current="page"><svg><use href="#i-grid"/></svg> Simulación</button>
+        <button class="nav-button" data-view="parcel3d"><svg><use href="#i-cube"/></svg> Parcela 3D</button>
+        <button class="nav-button" data-view="integration"><svg><use href="#i-chip"/></svg> Enlace ESP32</button>
+        <button class="nav-button" data-view="central"><svg><use href="#i-activity"/></svg> Central de parcelas</button>
+        <button class="nav-button" data-view="experiment"><svg><use href="#i-chart"/></svg> Comparativa E4</button>
+        <a class="nav-button" id="native-link" href="/riego/medidores" target="_top" hidden><svg><use href="#i-gauge"/></svg> Medidores</a>
+      </nav>
+      <div class="sidebar-end">
+        <span class="sidebar-device"><svg><use href="#i-activity"/></svg></span>
+        <span><b id="runtime-title">Simulador interno</b><small id="runtime-caption">Modo autónomo</small></span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topline">
+        <span><svg><use href="#i-pin"/></svg> Parcela de ensayo</span>
+        <div class="system-pills">
+          <span class="pill neutral" id="runtime-pill"><i></i><span id="runtime-pill-label">Simulador interno</span></span>
+          <span class="pill online" id="connection"><i></i><span id="connection-label">En línea</span></span>
+        </div>
+      </header>
+      <p id="command-feedback" class="command-feedback" role="status" hidden></p>
+
+      <section id="simulation" aria-labelledby="simulation-title">
+        <div class="page-heading">
+          <div><h1 id="simulation-title">Panel de riego</h1><p>Monitorea la humedad, las válvulas y la conducción compartida.</p></div>
+          <span class="clock"><svg><use href="#i-clock"/></svg><span id="clock">Día 1 · 06:00</span></span>
+        </div>
+
+        <div class="metrics" aria-label="Indicadores de la conducción">
+          <article class="metric"><span class="metric-icon blue"><svg><use href="#i-flow"/></svg></span><span>Caudal en la válvula</span><strong><b id="flow">0,0</b> <small>L/min</small></strong><small class="metric-caption" id="flow-caption"></small></article>
+          <article class="metric"><span class="metric-icon lavender"><svg><use href="#i-gauge"/></svg></span><span>Presión en la válvula</span><strong><b id="pressure">0,0</b> <small>bar</small></strong><small class="metric-caption" id="pressure-caption"></small></article>
+          <article class="metric"><span class="metric-icon green"><svg><use href="#i-valve"/></svg></span><span>Válvulas abiertas</span><strong><b id="active">0</b> <small>/ 4</small></strong></article>
+          <article class="metric"><span class="metric-icon amber"><svg><use href="#i-water"/></svg></span><span>Agua aplicada</span><strong><b id="total">0</b> <small>L</small></strong></article>
+        </div>
+
+        <div class="main-grid">
+          <section class="card parcel-card" aria-labelledby="parcel-title">
+            <div class="card-heading">
+              <div><h2 id="parcel-title">Mapa de la parcela</h2><p>4 sectores · 400 m²</p></div>
+              <span class="legend"><i></i> Regando</span>
+            </div>
+            <div class="parcel" id="parcel"></div>
+            <div class="parcel-foot"><svg><use href="#i-info"/></svg><span>Banda objetivo <b>35–45 %</b> · Máximo <b>1 válvula abierta</b></span></div>
+          </section>
+
+          <section class="card control-card" aria-labelledby="control-title">
+            <div class="control-heading"><span class="metric-icon green"><svg><use href="#i-sliders"/></svg></span><div><h2 id="control-title">Controles</h2><p>Ajustes de la simulación</p></div></div>
+            <label for="mode">Estrategia de riego</label>
+            <select id="mode"><option value="auto">Automatizado</option><option value="fixed">Horario fijo</option></select>
+            <label for="fault">Condición hidráulica</label>
+            <select id="fault"><option value="normal">Normal</option><option value="flow">Caudal bajo</option><option value="pressure">Presión baja</option></select>
+            <div class="network">
+              <div><label for="offline">Cortar conexión</label><small>Enlace con el registro de eventos</small></div>
+              <input type="checkbox" id="offline" role="switch" class="switch">
+            </div>
+            <button id="start" class="button primary"><svg><use id="start-icon" href="#i-play"/></svg><span id="start-label">Iniciar riego</span></button>
+            <button id="pause" class="button plain" hidden><svg><use href="#i-stop"/></svg> Pausar controlador</button>
+            <button id="reset" class="button plain"><svg><use href="#i-reset"/></svg> Reiniciar simulación</button>
+            <div class="status-note" id="status-note" role="status">
+              <svg><use id="note-icon" href="#i-info"/></svg>
+              <div><strong id="note-title">Sistema en espera</strong><p id="note-detail">Inicia el riego para activar el controlador.</p></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="card history" aria-labelledby="history-title">
+          <div class="card-heading">
+            <div><h2 id="history-title">Registro de eventos</h2><p>Aperturas, cierres y cambios de conexión</p></div>
+            <span class="pill neutral" id="queue"><svg><use href="#i-clock"/></svg><span id="queue-label">0 pendientes</span></span>
+          </div>
+          <ul id="events" class="event-list"></ul>
+        </section>
+      </section>
+
+      <section id="parcel3d" aria-labelledby="parcel3d-title" hidden>
+        <div class="page-heading">
+          <div><h1 id="parcel3d-title">Parcela 3D</h1><p>Recorre la parcela y sigue el agua hasta el sector activo.</p></div>
+          <span class="clock"><svg><use href="#i-clock"/></svg><span id="clock3d">Día 1 · 06:00</span></span>
+        </div>
+        <div class="scene-layout">
+          <section class="card scene-card" aria-label="Escena interactiva">
+            <div class="scene-stage">
+              <canvas id="scene" tabindex="0" aria-label="Parcela en 3D. Arrastra o usa las flechas para orbitar. Usa más y menos para acercar o alejar."></canvas>
+              <div class="scene-tag"><svg><use href="#i-cube"/></svg> Parcela de 400 m²</div>
+              <div class="spray-badge" id="scene-spray" hidden><svg><use href="#i-water"/></svg><span id="scene-spray-label"></span></div>
+              <div class="camera-tools" aria-label="Controles de cámara">
+                <button id="zoom-in" type="button" aria-label="Acercar" title="Acercar"><svg><use href="#i-plus"/></svg></button>
+                <button id="zoom-out" type="button" aria-label="Alejar" title="Alejar"><svg><use href="#i-minus"/></svg></button>
+                <button id="camera-reset" type="button" aria-label="Restablecer cámara" title="Restablecer cámara"><svg><use href="#i-reset"/></svg></button>
+              </div>
+            </div>
+            <div class="scene-foot"><span>Arrastra para girar · Desplaza para acercar</span><span class="legend scene-legend"><i></i> Paso de agua</span></div>
+          </section>
+          <section class="card scene-details" aria-labelledby="scene-details-title">
+            <div class="control-heading"><span class="metric-icon blue"><svg><use href="#i-water"/></svg></span><div><h2 id="scene-details-title">Conducción</h2><p id="scene-source">Simulador interno</p></div></div>
+            <div class="scene-metrics"><span><small>Caudal</small><b id="scene-flow">0,0</b><small>L/min</small></span><span><small>Presión</small><b id="scene-pressure">0,0</b><small>bar</small></span></div>
+            <p id="scene-sample" class="scene-sample"></p>
+            <ul class="scene-sectors" id="scene-sectors"></ul>
+            <label class="scene-fault-label" for="scene-fault">Condición hidráulica</label>
+            <select class="scene-fault" id="scene-fault"><option value="normal">Normal</option><option value="flow">Caudal bajo</option><option value="pressure">Presión baja</option></select>
+            <div class="status-note" id="scene-status" role="status"><svg><use id="scene-status-icon" href="#i-info"/></svg><div><strong id="scene-status-title">Sistema en espera</strong><p id="scene-status-detail">Inicia el riego para activar el controlador.</p></div></div>
+            <button id="scene-start" class="button primary"><svg><use id="scene-start-icon" href="#i-play"/></svg><span id="scene-start-label">Iniciar riego</span></button>
+            <button id="scene-pause" class="button plain" hidden><svg><use href="#i-stop"/></svg> Pausar controlador</button>
+            <button id="scene-controls" class="button plain">Ver controles hidráulicos <svg><use href="#i-arrow"/></svg></button>
+          </section>
+        </div>
+      </section>
+
+      <section id="integration" aria-labelledby="integration-title" hidden>
+        <div class="page-heading">
+          <div><h1 id="integration-title">Enlace ESP32</h1><p>Comprueba las tramas que llegan al panel y la confirmación de las válvulas.</p></div>
+          <span class="pill neutral" id="esp-pill"><i></i><span id="esp-status">En espera</span></span>
+        </div>
+        <div class="integration-grid">
+          <section class="card integration-card" aria-labelledby="link-title">
+            <div class="control-heading"><span class="metric-icon green"><svg><use href="#i-chip"/></svg></span><div><h2 id="link-title">Fuente de control</h2><p id="link-subtitle">Demo en navegador</p></div></div>
+            <label for="source">Origen del suelo y la hidráulica</label>
+            <select id="source"><option value="wokwi">ESP32 externo (Wokwi)</option><option value="local">Simulador interno</option></select>
+            <div id="local-hint" class="status-note"><svg><use href="#i-info"/></svg><div><strong>Abre el panel de Node-RED para conectar Wokwi</strong><p>Ejecuta Iniciar-Node-RED.cmd desde la carpeta del proyecto.</p></div></div>
+            <div id="external-hint" class="status-note" hidden><svg><use href="#i-wifi"/></svg><div><strong id="external-hint-title">Esperando telemetría</strong><p id="external-hint-detail">Abre el proyecto wokwi en VS Code y arranca el ESP32.</p></div></div>
+            <p class="endpoint" id="esp-endpoint"></p>
+          </section>
+          <section class="card integration-card" aria-labelledby="frames-title">
+            <div class="control-heading"><span class="metric-icon blue"><svg><use href="#i-activity"/></svg></span><div><h2 id="frames-title">Actividad en vivo</h2><p>Contadores del proceso y del enlace HTTP</p></div></div>
+            <dl class="protocol-stats">
+              <div><dt>Tramas del flujo</dt><dd id="frame-count">—</dd></div><div><dt>Pulsos de reloj</dt><dd id="tick-count">—</dd></div>
+              <div><dt>Paquetes ESP32</dt><dd id="esp-count">—</dd></div><div><dt>Último paquete</dt><dd id="esp-last">—</dd></div>
+              <div><dt>Consigna al ESP32</dt><dd id="desired-valve">—</dd></div><div><dt>Confirmación por GPIO</dt><dd id="actual-valve">—</dd></div>
+              <div><dt>Caudal del potenciómetro</dt><dd id="esp-flow">—</dd></div><div><dt>Presión del potenciómetro</dt><dd id="esp-pressure">—</dd></div>
+              <div><dt>Temperatura del aire</dt><dd id="esp-temperature">—</dd></div><div><dt>Humedad del aire</dt><dd id="esp-air-humidity">—</dd></div>
+              <div><dt>Perillas S1–S4</dt><dd id="esp-knobs">—</dd></div><div><dt>Suelo modelado S1–S4</dt><dd id="esp-soil">—</dd></div>
+              <div><dt>Órdenes recibidas</dt><dd id="action-count">—</dd></div><div><dt>Última orden</dt><dd id="last-action">—</dd></div>
+            </dl>
+            <div class="integration-links" id="integration-links" hidden><a id="editor-link" href="/" target="_top">Abrir editor <svg><use href="#i-arrow"/></svg></a><a id="state-link" href="/riegoguard/estado" target="_top">Ver estado JSON <svg><use href="#i-arrow"/></svg></a></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="central" aria-labelledby="central-title" hidden>
+        <div class="page-heading">
+          <div><h1 id="central-title">Central de parcelas</h1><p>Lecturas por zona y métricas acumuladas de los paquetes aceptados.</p></div>
+          <button class="button outline" id="central-download"><svg><use href="#i-download"/></svg> Descargar CSV</button>
+        </div>
+        <div class="metrics central-summary">
+          <article class="metric"><span class="metric-icon green"><svg><use href="#i-wifi"/></svg></span><span>Parcelas con datos vigentes</span><strong id="central-online">0 / 3</strong></article>
+          <article class="metric"><span class="metric-icon lavender"><svg><use href="#i-activity"/></svg></span><span>Muestras válidas de suelo</span><strong id="central-samples">0</strong></article>
+          <article class="metric"><span class="metric-icon blue"><svg><use href="#i-water"/></svg></span><span>Volumen estimado</span><strong><b id="central-volume">0,0</b> <small>L</small></strong></article>
+        </div>
+        <div class="farm-grid" id="farm-grid"></div>
+        <div class="card method"><svg><use href="#i-wifi"/></svg><div><h2>Enlace de Packet Tracer</h2><p id="packet-status">Esperando el diagnóstico de la pasarela.</p></div></div>
+        <p class="central-note" id="central-note">Abre el panel desde Node-RED para recibir muestras de Wokwi y Packet Tracer.</p>
+      </section>
+
+      <section id="experiment" aria-labelledby="experiment-title" hidden>
+        <div class="page-heading">
+          <div><h1 id="experiment-title">Comparativa E4</h1><p>Siete días virtuales por estrategia en la misma parcela.</p></div>
+          <button class="button outline" id="download" disabled><svg><use href="#i-download"/></svg> Descargar CSV</button>
+        </div>
+        <div class="card method"><svg><use href="#i-info"/></svg><div><h2>Condiciones del ensayo</h2><p id="e4-input" role="status">Esperando una captura de la sesión.</p><p>Ambas estrategias comparten el suelo, caudal y presión capturados, el mismo secado y un paso de 1 minuto. El horario fijo asigna 12 minutos diarios a cada sector, desde las 06:00. E4 proyecta siete días virtuales.</p><button class="button outline" id="e4-run">Capturar datos y ejecutar E4</button></div></div>
+        <div class="experiment-grid" id="summary"></div>
+        <section class="card daily-card" id="e4-daily" aria-labelledby="daily-title" hidden>
+          <div class="card-heading"><div><h2 id="daily-title">Resultados por día</h2><p>Consumo por superficie y proporción de tiempo dentro de 35–45 %.</p></div></div>
+          <div class="table-scroll"><table>
+            <thead><tr><th rowspan="2" scope="col">Día</th><th scope="colgroup" colspan="2">Automatizado</th><th scope="colgroup" colspan="2">Horario fijo</th></tr>
+              <tr><th scope="col">L/m²/día</th><th scope="col">En banda</th><th scope="col">L/m²/día</th><th scope="col">En banda</th></tr></thead>
+            <tbody id="daily-results"></tbody>
+          </table></div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <script src="app/simulador.js"></script>
+  <script src="app/telemetria.js"></script>
+  <script src="app/parcela3d.js"></script>
+  <script src="app/panel.js"></script>
+</body>
+</html>
