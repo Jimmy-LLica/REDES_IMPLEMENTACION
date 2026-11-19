@@ -5,6 +5,27 @@ const central = context.get('central');
 let state = context.get('estado');
 const bus = context.get('bus');
 const now = Date.now();
+
+function unpack(data) {
+  if (typeof data === 'string') {
+    try { return JSON.parse(data); } catch { return data; }
+  }
+  if (typeof data === 'object' && data !== null) {
+    if (typeof data.data === 'string') {
+      try { return JSON.parse(data.data); } catch {}
+    }
+    if (typeof data.payload === 'string') {
+      try { return JSON.parse(data.payload); } catch {}
+    }
+    const keys = Object.keys(data);
+    if (keys.length === 1 && typeof keys[0] === 'string' && keys[0].startsWith('{')) {
+      try { return JSON.parse(keys[0]); } catch {}
+    }
+  }
+  return data;
+}
+
+msg.payload = unpack(msg.payload);
 const command = msg.topic === 'orden-http';
 let topic = msg.topic;
 let value = msg.payload;
@@ -34,17 +55,27 @@ if (topic === 'central-http') {
 }
 
 if (topic === 'red-status-http') {
-  const { norte, sur, postNorte, postSur, virtualNorte = 0, virtualSur = 0 } = msg.payload || {};
-  const stages = ['esperando', 'alcanzable', 'sin-respuesta', 'respuesta-invalida'];
-  const validCode = (code) => Number.isInteger(code) && code >= 0 && code <= 599;
-  if (!stages.includes(norte) || !stages.includes(sur) || ![postNorte, postSur, virtualNorte, virtualSur].every(validCode)) {
-    return [null, httpReply(400, { error: 'Diagnóstico inválido.' }), null];
+  if (typeof msg.payload === 'string') {
+    try { msg.payload = JSON.parse(msg.payload); } catch {}
   }
+  console.log('DIAGNOSTICO RECIBIDO EN NODE-RED:', JSON.stringify(msg.payload));
+  let { norte, sur, postNorte, postSur, virtualNorte = 0, virtualSur = 0 } = msg.payload || {};
+  postNorte = Number(postNorte) || 0;
+  postSur = Number(postSur) || 0;
+  virtualNorte = Number(virtualNorte) || 0;
+  virtualSur = Number(virtualSur) || 0;
+  const stages = ['esperando', 'alcanzable', 'sin-respuesta', 'respuesta-invalida'];
+  if (!stages.includes(norte)) norte = 'esperando';
+  if (!stages.includes(sur)) sur = 'esperando';
   bus.packetTracer = { at: now, norte, sur, postNorte, postSur, virtualNorte, virtualSur };
   return [null, httpReply(200, { ok: true }), null];
 }
 
 if (topic === 'esp32' || topic === 'red-http') {
+  console.log('TELEMETRIA RECIBIDA:', topic, JSON.stringify(msg.payload));
+  if (typeof msg.payload === 'string') {
+    try { msg.payload = JSON.parse(msg.payload); } catch {}
+  }
   const source = topic === 'esp32' ? 'wokwi' : 'packet-tracer';
   const result = telemetry.accept(central, msg.payload, source, now, model.CONFIG);
   if (result.error) return [null, httpReply(result.status, { error: result.error, version: 2 }), null];

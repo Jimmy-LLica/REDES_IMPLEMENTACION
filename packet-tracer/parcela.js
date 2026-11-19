@@ -22,7 +22,7 @@ function setup() {
     });
     var started = HTTPServer.start(80);
     Serial.println(profile.farm + (started === false ? " no pudo abrir el puerto HTTP virtual 80" : " disponible en /telemetria"));
-    if (typeof Network !== "undefined") Serial.println("IP virtual " + Network.localIP() + " · puerta " + Network.gatewayIP());
+    // if (typeof Network !== "undefined") Serial.println("IP virtual " + Network.localIP() + " · puerta " + Network.gatewayIP());
 }
 
 function loop() {

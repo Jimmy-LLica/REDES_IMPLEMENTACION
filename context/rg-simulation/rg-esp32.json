@@ -1,33 +1,93 @@
 {
     "central": {
         "tacna-centro": {
-            "packets": 13159,
-            "samples": 52576,
-            "inBand": 2257,
+            "packets": 17768,
+            "samples": 71012,
+            "inBand": 16084,
             "liters": 291.57120000000026,
             "last": {
-                "boot": "esp-ddf7c575-1794870991505",
-                "seq": 6491,
+                "boot": "esp-86f85b67-1795046993313",
+                "seq": 401,
                 "valve": 0,
                 "flow": 12,
                 "pressure": 1.8,
                 "soil": [
-                    63,
-                    34.1,
-                    0,
-                    57.4
+                    34,
+                    38,
+                    36.5,
+                    41
                 ],
                 "air": {
                     "temperature": 24,
                     "humidity": 55
                 },
-                "sampledAt": 1794877610515,
-                "at": 1794877611441
+                "sampledAt": 1795047288111,
+                "at": 1795047288262
             },
             "retired": [
                 "esp-355abfab-1794863577710",
                 "esp-a2b5e56b-1794863934270",
-                "esp-3e0e0794-1794863977793"
+                "esp-3e0e0794-1794863977793",
+                "esp-ddf7c575-1794870991505",
+                "esp-cccf1b44-1795019446538",
+                "esp-c13011f6-1795020846800",
+                "esp-08e61b7e-1795045162609"
+            ]
+        },
+        "tacna-norte": {
+            "packets": 148,
+            "samples": 592,
+            "inBand": 450,
+            "liters": 25.26938333333333,
+            "last": {
+                "boot": "pt-tacna-norte-1795045841772",
+                "seq": 294,
+                "valve": 0,
+                "flow": 0,
+                "pressure": 0,
+                "soil": [
+                    32.8,
+                    39,
+                    36.1,
+                    43.2
+                ],
+                "air": {
+                    "temperature": 25,
+                    "humidity": 48
+                },
+                "sampledAt": 1795047306201,
+                "at": 1795047306234
+            },
+            "retired": [
+                "test"
+            ]
+        },
+        "tacna-sur": {
+            "packets": 146,
+            "samples": 584,
+            "inBand": 407,
+            "liters": 0,
+            "last": {
+                "boot": "pt-tacna-sur-1795045855995",
+                "seq": 287,
+                "valve": 0,
+                "flow": 0,
+                "pressure": 0,
+                "soil": [
+                    44.6,
+                    48.4,
+                    36.7,
+                    39.2
+                ],
+                "air": {
+                    "temperature": 21,
+                    "humidity": 63
+                },
+                "sampledAt": 1795047306246,
+                "at": 1795047306263
+            },
+            "retired": [
+                "test"
             ]
         }
     }

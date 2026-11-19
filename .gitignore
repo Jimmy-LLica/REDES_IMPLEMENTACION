@@ -1,0 +1,12 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Node-RED backups & runtime local context
+*.backup
+.flows.json.backup
+.config.nodes.json.backup
+
+# PlatformIO / IDE
+.pio/
+.vscode/.browse.c_cpp.db*
